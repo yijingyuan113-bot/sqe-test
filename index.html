@@ -1958,8 +1958,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 window.onload = () => { 
-  // 检查记住的用户
-  checkRememberedUser();
   // 初始化
   try { 
     showAllVocab(); 
@@ -1967,6 +1965,8 @@ window.onload = () => {
   } catch(e) {
     console.error('初始化失败:', e);
   }
+  // 注释掉自动登录，确保网站打开时停留在首页
+  // checkRememberedUser();
 };
 </script>
 </body>
