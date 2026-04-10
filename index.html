@@ -226,25 +226,22 @@ const whitelistUsers = [
 function getUser(username) {
   // 检查用户是否在白名单中
   if (whitelistUsers.includes(username)) {
-    return { name: username, paid: true };
+    return { name: username };
   }
   return null;
 }
 
 function hasPaidAccess() {
-  if (!currentUserEmail) return false;
-  // 直接进入的用户也有付费权限
-  if (currentUserEmail === "guest") return true;
-  const user = getUser(currentUserEmail);
-  return user && user.paid === true;
+  // 所有用户都有访问权限，不需要付费
+  return true;
 }
 
 function updateModuleAccess() {
-  const locked = !hasPaidAccess();
-  document.getElementById('practiceLocked').style.display = locked ? 'block' : 'none';
-  document.getElementById('practiceMain').style.display = locked ? 'none' : 'block';
-  document.getElementById('notesLocked').style.display = locked ? 'block' : 'none';
-  document.getElementById('notesMain').style.display = locked ? 'none' : 'block';
+  // 所有模块都开放，不需要锁定
+  document.getElementById('practiceLocked').style.display = 'none';
+  document.getElementById('practiceMain').style.display = 'block';
+  document.getElementById('notesLocked').style.display = 'none';
+  document.getElementById('notesMain').style.display = 'block';
 }
 
 // 登录
@@ -422,7 +419,7 @@ function goTab(tab) {
     currentTab = tab;
     if (tab === 'practice' || tab === 'notes') updateModuleAccess();
     if (tab === 'favorites') renderFavorites();
-    if (tab === 'notes' && hasPaidAccess()) displayAllNotes();
+    if (tab === 'notes') displayAllNotes();
     if (tab === 'course') initCourse();
     if (tab === 'vocabulary') showAllVocab();
   } catch(e) {
