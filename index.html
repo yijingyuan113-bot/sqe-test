@@ -2295,11 +2295,28 @@ let vocabulary = [
 {"en":"zero tolerance","cn":"零容忍"}
 ];
 
+// 单词发音函数
+function playWordSound(word) {
+  // 使用Web Speech API进行单词发音
+  if ('speechSynthesis' in window) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = 'en-US';
+    speechSynthesis.speak(utterance);
+  } else {
+    alert('您的浏览器不支持语音功能');
+  }
+}
+
 function showAllVocab() {
   let html = '';
   vocabulary.forEach(word => {
     html += `<div class="p-3 bg-blue-50 rounded border-l-4 border-blue-600">
-      <div class="font-bold text-blue-800">${word.en}</div>
+      <div class="flex justify-between items-center">
+        <div class="font-bold text-blue-800">${word.en}</div>
+        <button onclick="playWordSound('${word.en}')" class="text-blue-600 hover:text-blue-800">
+          🔊
+        </button>
+      </div>
       <div class="text-gray-700 text-sm mt-1">${word.cn}</div>
     </div>`;
   });
@@ -2323,7 +2340,12 @@ function vocabSearch() {
   } else {
     results.forEach(word => {
       html += `<div class="p-3 bg-green-50 rounded border-l-4 border-green-600">
-        <div class="font-bold text-green-800">${word.en}</div>
+        <div class="flex justify-between items-center">
+          <div class="font-bold text-green-800">${word.en}</div>
+          <button onclick="playWordSound('${word.en}')" class="text-green-600 hover:text-green-800">
+            🔊
+          </button>
+        </div>
         <div class="text-gray-700 text-sm mt-1">${word.cn}</div>
       </div>`;
     });
@@ -2346,7 +2368,12 @@ function shuffleVocab() {
   let html = '';
   shuffledVocab.forEach(word => {
     html += `<div class="p-3 bg-green-50 rounded border-l-4 border-green-600">
-        <div class="font-bold text-green-800">${word.en}</div>
+        <div class="flex justify-between items-center">
+          <div class="font-bold text-green-800">${word.en}</div>
+          <button onclick="playWordSound('${word.en}')" class="text-green-600 hover:text-green-800">
+            🔊
+          </button>
+        </div>
         <div class="text-gray-700 text-sm mt-1">${word.cn}</div>
       </div>`;
   });
