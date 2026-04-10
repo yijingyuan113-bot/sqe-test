@@ -303,7 +303,7 @@ function login() {
   loadFavorites();
   initNotes();
   updateModuleAccess();
-  goTab('course');
+  goTab('practice');
 }
 
 // 注册功能（已禁用）
@@ -326,9 +326,9 @@ function checkRememberedUser() {
         document.getElementById('home').classList.add('hidden');
         document.getElementById('app').classList.remove('hidden');
         loadFavorites();
-        initNotes();
-        updateModuleAccess();
-        goTab('course');
+  initNotes();
+  updateModuleAccess();
+  goTab('practice');
       }
     } catch (error) {
       console.error('自动登录失败:', error);
@@ -359,7 +359,7 @@ function directEnter() {
   loadFavorites();
   initNotes();
   updateModuleAccess();
-  goTab('course');
+  goTab('practice');
 }
 
 // ====================== 模块切换 ======================
