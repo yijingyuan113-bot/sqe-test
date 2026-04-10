@@ -14,7 +14,7 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
 <!-- 首页 -->
-<div id="home" class="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+<div id="home" class="py-12 bg-gray-50">
   <div class="text-center max-w-4xl mx-auto px-4">
     <div class="mb-12">
       <h1 class="text-4xl md:text-5xl font-light mb-6 text-gray-800">SQE 英国律师资格考试学习平台</h1>
@@ -80,9 +80,11 @@
         <p class="text-center text-gray-600 mb-4">系统已改为白名单登录<br>请联系管理员添加用户名到白名单</p>
         <button onclick="switchTab('login')" class="w-full bg-gray-600 text-white py-2 rounded">返回登录</button>
       </div>
+    </div>
+  </div>
 
 <!-- 主应用 -->
-<div id="app" class="hidden max-w-4xl mx-auto p-4">
+<div id="app" class="max-w-4xl mx-auto p-4">
   <h1 class="text-xl font-bold mb-1 text-center">SQE 学习系统</h1>
   <p class="text-center text-sm text-gray-500 mb-4">欢迎回来，<span id="userName"></span> | <button onclick="logout()" class="text-blue-600">退出</button></p>
 
@@ -302,16 +304,9 @@ function login() {
     // 确保DOM元素存在
     const userNameElement = document.getElementById('userName');
     const loginModalElement = document.getElementById('loginModal');
-    const homeElement = document.getElementById('home');
-    const appElement = document.getElementById('app');
     
     if (userNameElement) userNameElement.innerText = user.name;
     if (loginModalElement) loginModalElement.classList.add('hidden');
-    if (homeElement) homeElement.style.display = 'none';
-    if (appElement) {
-      appElement.style.display = 'block';
-      console.log('app元素已显示');
-    }
     
     // 初始化模块
     loadFavorites();
@@ -379,8 +374,9 @@ function logout() {
   currentUser = null;
   currentUserEmail = null;
   favorites = [];
-  document.getElementById('app').classList.add('hidden');
-  document.getElementById('home').classList.remove('hidden');
+  document.getElementById('userName').innerText = '';
+  // 重置模块状态
+  updateModuleAccess();
 }
 
 // 直接进入系统
@@ -393,15 +389,8 @@ function directEnter() {
     
     // 确保DOM元素存在
     const userNameElement = document.getElementById('userName');
-    const homeElement = document.getElementById('home');
-    const appElement = document.getElementById('app');
     
     if (userNameElement) userNameElement.innerText = currentUser;
-    if (homeElement) homeElement.style.display = 'none';
-    if (appElement) {
-      appElement.style.display = 'block';
-      console.log('app元素已显示');
-    }
     
     // 初始化模块
     loadFavorites();
