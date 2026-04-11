@@ -5,11 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SQE 学习系统</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <style>
-    .q-en { font-size:0.95rem; color:#111827; margin-bottom:6px; line-height:1.5; }
-    .q-cn { font-size:0.95rem; color:#374151; margin-bottom:12px; line-height:1.5; }
-    .opt-en { font-size:0.9rem; color:#111827; }
-    .opt-cn { font-size:0.9rem; color:#4b5563; margin-top:2px; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+    .q-en { font-size:0.95rem; color:#222; margin-bottom:6px; line-height:1.5; }
+    .q-cn { font-size:0.95rem; color:#555; margin-bottom:12px; line-height:1.5; }
+    .opt-en { font-size:0.9rem; color:#222; }
+    .opt-cn { font-size:0.9rem; color:#555; margin-top:2px; }
+    .btn {
+      transition: all 0.3s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    .card {
+      transition: all 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-900">
@@ -20,8 +39,8 @@
       <h1 class="text-4xl md:text-5xl font-light mb-6 text-gray-800">SQE 英国律师资格考试学习平台</h1>
 
       <div class="flex gap-4 justify-center">
-        <button onclick="showLogin()" class="bg-gray-100 text-gray-800 px-8 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-300 border border-gray-200">登录 开始学习</button>
-        <button onclick="directEnter()" class="bg-gray-100 text-gray-800 px-8 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-300 border border-gray-200">直接进入</button>
+        <button onclick="showLogin()" class="bg-white text-gray-800 px-8 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300 border border-gray-200 btn">登录 开始学习</button>
+        <button onclick="directEnter()" class="bg-white text-gray-800 px-8 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-300 border border-gray-200 btn">直接进入</button>
       </div>
     </div>
     
@@ -65,12 +84,12 @@
 
   <!-- 模块切换按钮 -->
   <div class="flex gap-2 mb-6 justify-center flex-wrap">
-    <button onclick="goTab('course')" class="bg-blue-600 text-white px-4 py-2 rounded">📘 课程模块</button>
-    <button onclick="goTab('practice')" class="bg-blue-600 text-white px-4 py-2 rounded">📝 题库练习</button>
-    <button onclick="goTab('vocabulary')" class="bg-blue-600 text-white px-4 py-2 rounded">📚 法律英语</button>
-    <button onclick="goTab('notes')" class="bg-blue-600 text-white px-4 py-2 rounded">📓 笔记</button>
-    <button onclick="goTab('favorites')" class="bg-blue-600 text-white px-4 py-2 rounded">⭐ 收藏题目</button>
-    <button onclick="goTab('exam')" class="bg-blue-600 text-white px-4 py-2 rounded">📋 考试介绍</button>
+    <button onclick="goTab('course')" class="bg-white text-gray-800 px-4 py-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors duration-300 btn">📘 课程模块</button>
+    <button onclick="goTab('practice')" class="bg-white text-gray-800 px-4 py-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors duration-300 btn">📝 题库练习</button>
+    <button onclick="goTab('vocabulary')" class="bg-white text-gray-800 px-4 py-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors duration-300 btn">📚 法律英语</button>
+    <button onclick="goTab('notes')" class="bg-white text-gray-800 px-4 py-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors duration-300 btn">📓 笔记</button>
+    <button onclick="goTab('favorites')" class="bg-white text-gray-800 px-4 py-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors duration-300 btn">⭐ 收藏题目</button>
+    <button onclick="goTab('exam')" class="bg-white text-gray-800 px-4 py-2 rounded border border-gray-200 hover:bg-gray-50 transition-colors duration-300 btn">📋 考试介绍</button>
   </div>
 
   <!-- 1. 课程模块 -->
@@ -108,9 +127,17 @@
       <!-- 文件上传功能 -->
       <div class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
         <h4 class="font-medium mb-2">导入题库文件</h4>
-        <input type="file" id="questionFile" accept=".json,.txt" class="mb-2">
+        <div class="mb-2">
+          <label class="text-sm font-medium text-gray-700">选择导入格式：</label>
+          <select id="importFormat" class="ml-2 p-1 border rounded" onchange="toggleImportFormat()">
+            <option value="json">JSON 格式</option>
+            <option value="word">Word 文档</option>
+            <option value="txt">文本格式</option>
+          </select>
+        </div>
+        <input type="file" id="questionFile" accept=".json,.txt,.doc,.docx" class="mb-2">
         <button onclick="importQuestions()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">导入题目</button>
-        <p class="text-xs text-gray-500 mt-2">支持 JSON 格式的题库文件</p>
+        <p class="text-xs text-gray-500 mt-2">支持 JSON、Word (.doc/.docx) 和文本格式的题库文件</p>
       </div>
       
       <!-- 乱序练习选项 -->
@@ -180,7 +207,7 @@
   <div id="tab-vocabulary" class="hidden bg-white p-5 rounded shadow">
     <h3 class="font-bold text-lg mb-3">📚 法律英语词汇库</h3>
     <div class="mb-4">
-      <input id="vocabSearch" type="text" placeholder="搜索单词（英文或中文）..." class="w-full p-2 border rounded mb-2">
+      <input id="vocabSearch" type="text" placeholder="搜索单词（英文或中文）..." class="w-full p-2 border border-gray-200 rounded mb-2 focus:outline-none focus:ring-1 focus:ring-gray-300">
       <div class="flex gap-2">
         <button onclick="showAllVocab()" class="bg-blue-600 text-white px-4 py-2 rounded text-sm">全部显示</button>
         <button onclick="vocabSearch()" class="bg-gray-600 text-white px-4 py-2 rounded text-sm">搜索</button>
@@ -1111,6 +1138,175 @@ function generateMockQuestions() {
       ans: "C",
       exp_cn: "要约是一方当事人向另一方当事人提出的，愿意按照一定条件订立合同的意思表示。",
       exp_en: "An offer is a statement by one party to another indicating a willingness to enter into a contract on certain terms."
+    },
+    {
+      q_en: "Which of the following is a necessary element for a valid contract?",
+      q_cn: "以下哪项是有效合同的必要要素？",
+      options: [
+        { en: "Mistake", cn: "错误" },
+        { en: "Misrepresentation", cn: "虚假陈述" },
+        { en: "Consideration", cn: "对价" },
+        { en: "Duress", cn: "胁迫" }
+      ],
+      ans: "C",
+      exp_cn: "对价是有效合同的必要要素之一，指的是双方当事人之间的价值交换。",
+      exp_en: "Consideration is a necessary element for a valid contract, referring to the exchange of value between parties."
+    },
+    {
+      q_en: "In tort law, what is the standard of care required for negligence?",
+      q_cn: "在侵权法中，过失所需的注意标准是什么？",
+      options: [
+        { en: "The standard of a reasonable person", cn: "合理人的标准" },
+        { en: "The standard of a professional expert", cn: "专业专家的标准" },
+        { en: "The standard of perfection", cn: "完美标准" },
+        { en: "No standard at all", cn: "没有标准" }
+      ],
+      ans: "A",
+      exp_cn: "在侵权法中，过失的注意标准是合理人的标准，即一个理性的人在相同情况下会采取的注意程度。",
+      exp_en: "In tort law, the standard of care for negligence is the standard of a reasonable person, i.e., the level of care that a reasonable person would take in the same circumstances."
+    },
+    {
+      q_en: "Which of the following is a criminal offence under English law?",
+      q_cn: "以下哪项是英国法律规定的刑事犯罪？",
+      options: [
+        { en: "Breach of contract", cn: "违反合同" },
+        { en: "Defamation", cn: "诽谤" },
+        { en: "Murder", cn: "谋杀" },
+        { en: "Negligence", cn: "过失" }
+      ],
+      ans: "C",
+      exp_cn: "谋杀是英国法律规定的刑事犯罪，而违反合同、诽谤和过失通常是民事责任。",
+      exp_en: "Murder is a criminal offence under English law, while breach of contract, defamation, and negligence are typically civil liabilities."
+    },
+    {
+      q_en: "What is the burden of proof in a criminal case?",
+      q_cn: "刑事案件中的举证责任是什么？",
+      options: [
+        { en: "Balance of probabilities", cn: "盖然性权衡" },
+        { en: "Beyond reasonable doubt", cn: "排除合理怀疑" },
+        { en: "Preponderance of evidence", cn: "优势证据" },
+        { en: "Clear and convincing evidence", cn: "明确且令人信服的证据" }
+      ],
+      ans: "B",
+      exp_cn: "在刑事案件中，举证责任是排除合理怀疑，这是最高的证明标准。",
+      exp_en: "In criminal cases, the burden of proof is beyond reasonable doubt, which is the highest standard of proof."
+    },
+    {
+      q_en: "Which of the following is a feature of the UK constitution?",
+      q_cn: "以下哪项是英国宪法的特点？",
+      options: [
+        { en: "It is a single written document", cn: "它是单一的书面文件" },
+        { en: "It is uncodified", cn: "它是未编纂的" },
+        { en: "It is based on a federal system", cn: "它基于联邦制" },
+        { en: "It is immutable", cn: "它是不可变更的" }
+      ],
+      ans: "B",
+      exp_cn: "英国宪法是未编纂的，由成文法、普通法和宪法惯例组成。",
+      exp_en: "The UK constitution is uncodified, consisting of statute law, common law, and constitutional conventions."
+    },
+    {
+      q_en: "In contract law, what is the effect of a mistake that renders the contract void?",
+      q_cn: "在合同法中，使合同无效的错误有什么效果？",
+      options: [
+        { en: "The contract is enforceable", cn: "合同可执行" },
+        { en: "The contract is voidable", cn: "合同可撤销" },
+        { en: "The contract is void ab initio", cn: "合同自始无效" },
+        { en: "The contract is unenforceable", cn: "合同不可执行" }
+      ],
+      ans: "C",
+      exp_cn: "使合同无效的错误会导致合同自始无效，即从一开始就没有法律效力。",
+      exp_en: "A mistake that renders a contract void makes the contract void ab initio, meaning it has no legal effect from the beginning."
+    },
+    {
+      q_en: "Which of the following is an example of vicarious liability?",
+      q_cn: "以下哪项是替代责任的例子？",
+      options: [
+        { en: "A person is liable for their own actions", cn: "个人对自己的行为负责" },
+        { en: "An employer is liable for the actions of their employees", cn: "雇主对其雇员的行为负责" },
+        { en: "A landlord is liable for defects in a property", cn: "房东对物业缺陷负责" },
+        { en: "A manufacturer is liable for defective products", cn: "制造商对缺陷产品负责" }
+      ],
+      ans: "B",
+      exp_cn: "替代责任是指一个人对另一个人的行为负责，最常见的例子是雇主对其雇员在工作过程中的行为负责。",
+      exp_en: "Vicarious liability is where one person is held responsible for the actions of another, most commonly where an employer is liable for the actions of their employees in the course of employment."
+    },
+    {
+      q_en: "What is the role of the Supreme Court in the UK?",
+      q_cn: "英国最高法院的角色是什么？",
+      options: [
+        { en: "To make new laws", cn: "制定新法律" },
+        { en: "To interpret the law", cn: "解释法律" },
+        { en: "To enforce the law", cn: "执行法律" },
+        { en: "To propose legislation", cn: "提出立法建议" }
+      ],
+      ans: "B",
+      exp_cn: "英国最高法院的主要角色是解释法律，特别是解决法律上的争议和澄清法律原则。",
+      exp_en: "The main role of the Supreme Court in the UK is to interpret the law, particularly to resolve legal disputes and clarify legal principles."
+    },
+    {
+      q_en: "Which of the following is a ground for divorce under English law?",
+      q_cn: "以下哪项是英国法律规定的离婚理由？",
+      options: [
+        { en: "Irretrievable breakdown of marriage", cn: "婚姻关系无可挽回的破裂" },
+        { en: "Adultery", cn: "通奸" },
+        { en: "Desertion", cn: "遗弃" },
+        { en: "All of the above", cn: "以上都是" }
+      ],
+      ans: "D",
+      exp_cn: "在英国法律中，离婚的唯一理由是婚姻关系无可挽回的破裂，而通奸和遗弃等是证明这种破裂的事实。",
+      exp_en: "Under English law, the only ground for divorce is irretrievable breakdown of marriage, with adultery and desertion being facts that prove such breakdown."
+    },
+    {
+      q_en: "What is the meaning of 'consideration' in contract law?",
+      q_cn: "合同法中'对价'的含义是什么？",
+      options: [
+        { en: "A gift given without expectation of return", cn: "无回报期望的礼物" },
+        { en: "Something of value exchanged between parties", cn: "当事人之间交换的有价值的东西" },
+        { en: "A promise to do something in the future", cn: "将来做某事的承诺" },
+        { en: "A legal document signed by both parties", cn: "双方签署的法律文件" }
+      ],
+      ans: "B",
+      exp_cn: "对价是指当事人之间交换的有价值的东西，是有效合同的必要要素之一。",
+      exp_en: "Consideration refers to something of value exchanged between parties, and is a necessary element for a valid contract."
+    },
+    {
+      q_en: "Which of the following is a fiduciary duty?",
+      q_cn: "以下哪项是信托义务？",
+      options: [
+        { en: "A duty to act in one's own best interest", cn: "为自己最大利益行事的义务" },
+        { en: "A duty to act in the best interest of another", cn: "为他人最大利益行事的义务" },
+        { en: "A duty to act with reasonable care", cn: "以合理谨慎行事的义务" },
+        { en: "A duty to act in accordance with the law", cn: "依法行事的义务" }
+      ],
+      ans: "B",
+      exp_cn: "信托义务是指为他人最大利益行事的义务，常见于信托关系、代理关系等。",
+      exp_en: "A fiduciary duty is a duty to act in the best interest of another, commonly found in trustee-beneficiary relationships and agency relationships."
+    },
+    {
+      q_en: "What is the standard of proof in a civil case?",
+      q_cn: "民事案件中的证明标准是什么？",
+      options: [
+        { en: "Beyond reasonable doubt", cn: "排除合理怀疑" },
+        { en: "Balance of probabilities", cn: "盖然性权衡" },
+        { en: "Clear and convincing evidence", cn: "明确且令人信服的证据" },
+        { en: "Preponderance of evidence", cn: "优势证据" }
+      ],
+      ans: "B",
+      exp_cn: "在民事案件中，证明标准是盖然性权衡，即原告需要证明其主张更有可能是真实的。",
+      exp_en: "In civil cases, the standard of proof is the balance of probabilities, meaning the claimant needs to prove that their claim is more likely than not to be true."
+    },
+    {
+      q_en: "Which of the following is a feature of the doctrine of judicial precedent?",
+      q_cn: "以下哪项是司法先例原则的特点？",
+      options: [
+        { en: "Judges are not bound by previous decisions", cn: "法官不受先前判决的约束" },
+        { en: "Only the ratio decidendi is binding", cn: "只有判决理由具有约束力" },
+        { en: "Obiter dicta are binding on future cases", cn: "附带意见对未来案件具有约束力" },
+        { en: "All decisions are binding regardless of the court's hierarchy", cn: "所有判决都具有约束力，无论法院的层级" }
+      ],
+      ans: "B",
+      exp_cn: "司法先例原则的特点是只有判决理由（ratio decidendi）具有约束力，而附带意见（obiter dicta）不具有约束力。",
+      exp_en: "A feature of the doctrine of judicial precedent is that only the ratio decidendi (reason for the decision) is binding, while obiter dicta (incidental remarks) are not binding."
     }
   ];
 }
@@ -2407,17 +2603,17 @@ window.onload = () => {
 </script>
 
 <!-- 页脚 -->
-<footer class="bg-gray-50 border-t border-gray-200 py-8 mt-12">
+<footer class="bg-white border-t border-gray-100 py-8 mt-12">
   <div class="max-w-4xl mx-auto px-4 text-center">
-    <h3 class="text-xl font-semibold text-gray-800 mb-4">SQE 英国律师资格考试学习平台</h3>
-    <p class="text-gray-600 mb-6">
+    <h3 class="text-xl font-medium text-gray-800 mb-4">SQE 英国律师资格考试学习平台</h3>
+    <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
       成功来自于每一天的努力与坚持，学习法律不仅是为了考试，更是为了培养严谨的思维和专业的素养。
       愿你在法律的道路上不断前行，成为一名优秀的法律专业人士。
     </p>
-    <div class="flex justify-center space-x-4 mb-6">
-      <a href="#" class="text-blue-600 hover:text-blue-800">关于我们</a>
-      <a href="#" class="text-blue-600 hover:text-blue-800">学习资源</a>
-      <a href="#" class="text-blue-600 hover:text-blue-800">联系我们</a>
+    <div class="flex justify-center space-x-6 mb-6">
+      <a href="#" class="text-gray-600 hover:text-gray-800 transition-colors duration-300">关于我们</a>
+      <a href="#" class="text-gray-600 hover:text-gray-800 transition-colors duration-300">学习资源</a>
+      <a href="#" class="text-gray-600 hover:text-gray-800 transition-colors duration-300">联系我们</a>
     </div>
     <p class="text-sm text-gray-500">© 2026 SQE学习平台. 保留所有权利.</p>
   </div>
