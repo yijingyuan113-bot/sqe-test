@@ -124,50 +124,7 @@
         <button onclick="startPractice('all')" class="bg-purple-600 text-white px-4 py-3 rounded shadow">全部题库</button>
       </div>
       
-      <!-- 文件上传功能 -->
-      <div class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-        <h4 class="font-medium mb-2">导入题库文件</h4>
-        <div class="mb-2">
-          <label class="text-sm font-medium text-gray-700">选择导入格式：</label>
-          <select id="importFormat" class="ml-2 p-1 border rounded" onchange="toggleImportFormat()">
-            <option value="json">JSON 格式</option>
-            <option value="word">Word 文档</option>
-            <option value="txt">文本格式</option>
-          </select>
-        </div>
-        <input type="file" id="questionFile" accept=".json,.txt,.doc,.docx" class="mb-2">
-        <button onclick="importQuestions()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">导入题目</button>
-        <p class="text-xs text-gray-500 mt-2">支持 JSON、Word (.doc/.docx) 和文本格式的题库文件</p>
-        
-        <!-- 手动输入JSON区域 -->
-        <div class="mt-4">
-          <h5 class="text-sm font-medium mb-2">或手动输入JSON格式题目：</h5>
-          <textarea id="jsonInput" rows="10" class="w-full p-2 border rounded mb-2" placeholder='输入JSON格式的题目，例如：
-[
-  {
-    "q_en": "英文题目",
-    "q_cn": "中文题目",
-    "options": [
-      {"en": "选项A", "cn": "选项A中文"},
-      {"en": "选项B", "cn": "选项B中文"},
-      {"en": "选项C", "cn": "选项C中文"},
-      {"en": "选项D", "cn": "选项D中文"}
-    ],
-    "ans": "A",
-    "exp_cn": "中文解析",
-    "exp_en": "英文解析"
-  }
-]'></textarea>
-          <div class="flex gap-2 flex-wrap">
-            <button onclick="fillSampleSQE1Questions()" class="bg-blue-500 text-white px-3 py-1 rounded text-sm">填充SQE1样题</button>
-            <button onclick="addSRAFLK2Questions()" class="bg-purple-500 text-white px-3 py-1 rounded text-sm">填充FLK2样题</button>
-            <button onclick="importLocalFLK2Questions()" class="bg-orange-500 text-white px-3 py-1 rounded text-sm">导入本地FLK2真题</button>
-            <button onclick="importLocalSRAFLK1Questions()" class="bg-red-500 text-white px-3 py-1 rounded text-sm">导入本地FLK1真题</button>
-            <button onclick="importLocalQuestionsToStorage()" class="bg-yellow-500 text-white px-3 py-1 rounded text-sm">直接导入题目</button>
-            <button onclick="importFromJsonInput()" class="bg-green-500 text-white px-3 py-1 rounded text-sm">从JSON输入导入</button>
-          </div>
-        </div>
-      </div>
+
       
       <!-- 乱序练习选项 -->
       <div class="flex items-center mb-4">
@@ -890,7 +847,7 @@ function deletePDF(id) {
 }
 
 
-// ====================== 题库数据（133题完整） ======================
+// ====================== 题库数据 ======================
 // 直接硬编码题目数据，确保换电脑也能看到
 let questions = [
 {id:1,cate:"FLK1",q_en:"An architect received a leaflet from website designers advertising their services. The leaflet stated that they could build a website for £500. The architect telephoned the company and asked them to build him a website. He signed and returned a tear-off slip from the leaflet which stated that he accepted their quotation. Which best describes the legal position?",q_cn:"一名建筑师收到网站设计公司的服务宣传单，宣传单写明可500英镑建网站。建筑师致电要求建网站，并签署寄回回执表示接受报价。哪项正确描述法律关系？",options:[{en:"The leaflet constituted an offer.",cn:"宣传单构成要约。"},{en:"The quotation constituted an offer which the architect accepted by signing and returning the tear-off slip.",cn:"报价构成要约，建筑师签署回执构成承诺。"},{en:"A contract was concluded on the architect’s standard terms.",cn:"合同按建筑师标准条款成立。"},{en:"The architect’s letter requesting design services constituted an offer.",cn:"建筑师的请求构成要约。"}],ans:"B",exp_cn:"报价属于要约，回执签署构成承诺。",exp_en:"The quotation is an offer; signing the slip is acceptance."},
@@ -898,6 +855,11 @@ let questions = [
 {id:3,cate:"FLK1",q_en:"A claimant in a negligence action seeks to withhold inspection of a letter written by an expert instructed by the claimant’s solicitor before the claim was issued. On what basis can inspection be withheld?",q_cn:"原告在过失索赔中希望拒绝对方查阅律师诉前委托专家出具的信函。可基于何种理由？",options:[{en:"Legal advice privilege applies.",cn:"法律咨询特权。"},{en:"Disclosure would be disproportionate.",cn:"披露不成比例。"},{en:"Litigation privilege applies because the document was created for the dominant purpose of litigation.",cn:"诉讼特权，文件主要为诉讼制作。"},{en:"The letter is in the possession of the managing director.",cn:"信函由执行董事持有。"}],ans:"C",exp_cn:"诉讼特权适用于为现有或预期诉讼而制作的文件。",exp_en:"Litigation privilege applies where document is created for dominant purpose of existing or contemplated litigation."},
 {id:4,cate:"FLK1",q_en:"Before a company was incorporated, a promoter entered into a contract with a fitness enthusiast to buy some gym equipment for the company. The company has now been incorporated and has started using the equipment. With whom does the benefit of the contract reside?",q_cn:"公司成立前，发起人为公司购买健身器材签订合同。公司现已成立并使用器材。合同利益归谁？",options:[{en:"The company is entitled to the benefit.",cn:"公司享有利益。"},{en:"The benefit is held by the shareholder(s) of the company.",cn:"利益由股东持有。"},{en:"The benefit is held by the enthusiast personally.",cn:"利益由签约人个人持有。"},{en:"The benefit is held jointly by the company and the enthusiast.",cn:"共同持有。"}],ans:"C",exp_cn:"公司成立前合同属于发起人个人合同，公司不能追认。",exp_en:"Pre-incorporation contracts are personal to the promoter; the company cannot adopt them."},
 {id:5,cate:"FLK1",q_en:"A woman claims her Article 8 ECHR rights were infringed by a newspaper. Her cousin wants to bring proceedings under the Human Rights Act 1998 on her behalf. Can the cousin bring proceedings under the HRA?",q_cn:"女性声称《欧洲人权公约》第8条被报纸侵犯。表亲希望代其根据《1998年人权法》起诉。能否起诉？",options:[{en:"Yes, because she is a member of the woman’s family.",cn:"可以，因是家属。"},{en:"Yes, because the woman does not want the publicity of bringing a claim.",cn:"可以，因女性不想公开。"},{en:"No, because only a victim can bring a claim under the HRA and the cousin is not a victim.",cn:"不可以，只有受害者能起诉。"},{en:"Yes, because the cousin can pay any costs.",cn:"可以，因能支付费用。"}],ans:"C",exp_cn:"只有受害者本人才能根据人权法起诉。",exp_en:"Only the victim can bring a claim under the Human Rights Act."},
+{id:6,cate:"FLK1",q_en:"The government is proposing legislation to ban a synthetic drug. The drug is currently legal. The proposed legislation will make it a criminal offence to possess, supply or produce the drug. Which of the following best describes the legal nature of this legislation?",q_cn:"政府拟立法禁止某种合成药物。该药物目前合法。拟议立法将规定持有、供应或生产该药物为刑事犯罪。以下哪项最能描述此立法的法律性质？",options:[{en:"Primary legislation",cn:"主要立法"},{en:"Secondary legislation",cn:"次级立法"},{en:"Delegated legislation",cn:"授权立法"},{en:"Common law",cn:"普通法"}],ans:"A",exp_cn:"政府提出的立法是主要立法，由议会通过。",exp_en:"Government-proposed legislation is primary legislation passed by Parliament."},
+{id:7,cate:"FLK1",q_en:"A solicitor is representing a client in a personal injury claim. The client has instructed the solicitor to settle the claim for £10,000. The solicitor receives an offer of £12,000 from the defendant. What should the solicitor do?",q_cn:"律师代表客户处理人身伤害索赔。客户指示律师以10,000英镑和解。律师收到被告12,000英镑的报价。律师应该怎么做？",options:[{en:"Accept the £12,000 offer without consulting the client",cn:"未经咨询客户直接接受12,000英镑报价"},{en:"Reject the £12,000 offer and continue negotiations",cn:"拒绝12,000英镑报价并继续谈判"},{en:"Consult the client about the £12,000 offer",cn:"就12,000英镑报价咨询客户"},{en:"Tell the defendant that the client will only accept £10,000",cn:"告诉被告客户只接受10,000英镑"}],ans:"C",exp_cn:"律师必须就超过客户指示的报价咨询客户。",exp_en:"The solicitor must consult the client about offers that exceed the client's instructions."},
+{id:8,cate:"FLK1",q_en:"A company is incorporated with the following objects clause in its memorandum of association: 'To carry on the business of manufacturing and selling widgets'. The company enters into a contract to buy a piece of land for development. Is the contract valid?",q_cn:"公司注册时的组织大纲目标条款为：'从事小部件制造和销售业务'。公司签订合同购买一块土地用于开发。该合同是否有效？",options:[{en:"No, because the contract is outside the company's objects",cn:"无效，因为合同超出公司目标范围"},{en:"Yes, because the objects clause is no longer restrictive",cn:"有效，因为目标条款不再具有限制性"},{en:"No, because the company has not obtained shareholder approval",cn:"无效，因为公司未获得股东批准"},{en:"Yes, because the contract is for the benefit of the company",cn:"有效，因为合同对公司有利"}],ans:"B",exp_cn:"根据《2006年公司法》，目标条款不再限制公司能力。",exp_en:"Under the Companies Act 2006, objects clauses no longer restrict a company's capacity."},
+{id:9,cate:"FLK1",q_en:"A man is arrested on suspicion of theft. He is taken to a police station and questioned. The police fail to caution him before questioning. What is the legal effect of this failure?",q_cn:"一名男子因涉嫌盗窃被逮捕。他被带到警察局接受讯问。警察在讯问前未对他进行警告。这种疏忽的法律效果是什么？",options:[{en:"The man's answers cannot be used as evidence",cn:"该男子的回答不能作为证据使用"},{en:"The police must release the man immediately",cn:"警察必须立即释放该男子"},{en:"The man is entitled to compensation",cn:"该男子有权获得赔偿"},{en:"The police have committed a criminal offence",cn:"警察犯有刑事罪行"}],ans:"A",exp_cn:"未进行警告的讯问回答不能作为证据使用。",exp_en:"Answers given during questioning without a caution cannot be used as evidence."},
+{id:10,cate:"FLK1",q_en:"A woman is injured in a car accident. She sues the driver of the other car for negligence. The driver argues that the woman was contributorily negligent because she was not wearing a seatbelt. What is the effect of contributory negligence?",q_cn:"一名女性在车祸中受伤。她以过失为由起诉另一辆车的司机。司机辩称，该女性因未系安全带而存在共同过失。共同过失的效果是什么？",options:[{en:"It completely bars the woman's claim",cn:"完全禁止该女性的索赔"},{en:"It reduces the damages the woman can recover",cn:"减少该女性可获得的损害赔偿"},{en:"It has no effect on the woman's claim",cn:"对该女性的索赔没有影响"},{en:"It shifts the burden of proof to the woman",cn:"将举证责任转移给该女性"}],ans:"B",exp_cn:"共同过失会减少但不会完全禁止损害赔偿。",exp_en:"Contributory negligence reduces but does not completely bar damages."}
 ];
 
 // FLK2题库 - 83个题目
