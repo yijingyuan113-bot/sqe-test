@@ -1,4 +1,4 @@
-const sqeQuestions = [  {
+﻿const sqeQuestions = [  {
     "number": 1,
     "flk": "FLK1",
     "category": "FLK1",
