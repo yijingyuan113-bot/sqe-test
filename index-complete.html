@@ -1,1077 +1,387 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SQE 学习系统</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    :root {
-      --primary: #5B4FCF;
-      --primary-light: #7B6FEF;
-      --bg: #EEF0FF;
-      --card: #FFFFFF;
-      --text: #1E1E2F;
-      --text-light: #6B7280;
-      --border: #E5E7EB;
-      --success: #10B981;
-      --error: #EF4444;
-      --warning: #F59E0B;
-      --radius: 12px;
-    }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-    
-    .hidden { display: none !important; }
-    
-    /* 首页 */
-    #home {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #EEF0FF 0%, #E8E6FF 50%, #F0EEFF 100%);
-      padding: 20px;
-      text-align: center;
-    }
-    
-    .home-logo {
-      width: 80px;
-      height: 80px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      color: white;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 30px rgba(91, 79, 207, 0.3);
-    }
-    
-    .home-title {
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 8px;
-    }
-    
-    .home-sub {
-      font-size: 1rem;
-      color: var(--text-light);
-      margin-bottom: 32px;
-    }
-    
-    .home-btn-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .btn {
-      padding: 12px 28px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      box-shadow: 0 4px 15px rgba(91, 79, 207, 0.3);
-    }
-    
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(91, 79, 207, 0.4); }
-    
-    .btn-outline {
-      background: white;
-      color: var(--primary);
-      border: 1.5px solid var(--primary);
-    }
-    
-    .btn-outline:hover { background: #F5F4FF; }
-    
-    /* 主应用 */
-    #app {
-      max-width: 860px;
-      margin: 20px auto;
-      background: var(--card);
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-      overflow: hidden;
-    }
-    
-    /* 顶部 */
-    .top-nav {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    .top-nav h2 { font-size: 1.1rem; font-weight: 600; }
-    .top-nav a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.9rem; }
-    .top-nav a:hover { color: white; }
-    
-    /* 导航栏 */
-    .nav {
-      display: flex;
-      gap: 6px;
-      padding: 12px 16px;
-      background: #FAFAFA;
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-    }
-    
-    .nav::-webkit-scrollbar { height: 0; }
-    
-    .nav-btn {
-      padding: 7px 14px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      border: 1px solid transparent;
-      cursor: pointer;
-      white-space: nowrap;
-      background: white;
-      color: var(--text-light);
-      transition: all 0.15s;
-    }
-    
-    .nav-btn:hover { border-color: var(--primary); color: var(--primary); }
-    
-    .nav-btn.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 2px 8px rgba(91, 79, 207, 0.3);
-    }
-    
-    /* 内容区 */
-    .content { padding: 24px; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    
-    .panel-title {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--bg);
-    }
-    
-    /* 搜索框 */
-    .search-box {
-      width: 100%;
-      padding: 10px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 0.9rem;
-      outline: none;
-      margin-bottom: 16px;
-      transition: border-color 0.2s;
-    }
-    
-    .search-box:focus { border-color: var(--primary); }
-    
-    /* 筛选下拉 */
-    .filter-bar {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    
-    .filter-bar select {
-      padding: 7px 12px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      background: white;
-      cursor: pointer;
-      outline: none;
-    }
-    
-    /* 课程卡片 */
-    .course-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-    
-    .course-card {
-      background: var(--bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      border: 1px solid var(--border);
-    }
-    
-    .course-card h3 {
-      font-size: 0.95rem;
-      color: var(--primary);
-      margin-bottom: 8px;
-    }
-    
-    .course-item {
-      padding: 8px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    
-    .course-item:last-child { border-bottom: none; }
-    
-    .course-item-title {
-      font-weight: 600;
-      font-size: 0.88rem;
-      color: var(--text);
-      margin-bottom: 2px;
-    }
-    
-    .course-item-desc {
-      font-size: 0.78rem;
-      color: var(--text-light);
-      line-height: 1.4;
-    }
-    
-    /* 题目卡片 */
-    .q-card {
-      background: var(--bg);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-      border: 1px solid var(--border);
-    }
-    
-    .q-meta {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-    
-    .q-badge {
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
-    
-    .q-badge-flk { background: #EEF0FF; color: var(--primary); }
-    .q-badge-cat { background: #FFF7ED; color: #D97706; }
-    
-    .q-num {
-      font-size: 0.8rem;
-      color: var(--text-light);
-      margin-bottom: 8px;
-    }
-    
-    .q-stem {
-      font-size: 0.92rem;
-      line-height: 1.7;
-      color: var(--text);
-      margin-bottom: 16px;
-    }
-    
-    .q-opts { display: flex; flex-direction: column; gap: 6px; }
-    
-    .q-opt {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      border: 1.5px solid transparent;
-      font-size: 0.88rem;
-      transition: all 0.15s;
-      background: white;
-    }
-    
-    .q-opt:hover { border-color: var(--primary); }
-    
-    .q-opt.selected { border-color: var(--primary); background: #F5F4FF; }
-    .q-opt.correct { border-color: var(--success); background: #D1FAE5; }
-    .q-opt.wrong { border-color: var(--error); background: #FEE2E2; }
-    
-    .q-opt-letter {
-      min-width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: var(--bg);
-      color: var(--primary);
-      flex-shrink: 0;
-    }
-    
-    .q-opt.correct .q-opt-letter { background: var(--success); color: white; }
-    .q-opt.wrong .q-opt-letter { background: var(--error); color: white; }
-    
-    .q-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    
-    .q-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-    }
-    
-    .q-btn-check { background: var(--primary); color: white; }
-    .q-btn-check:hover { opacity: 0.9; }
-    .q-btn-answer { background: #F3F4F6; color: var(--text); }
-    .q-btn-answer:hover { background: #E5E7EB; }
-    .q-btn-next { background: var(--success); color: white; }
-    .q-btn-next:hover { opacity: 0.9; }
-    
-    .q-analysis {
-      background: #FFFBEB;
-      border: 1px solid #F59E0B;
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-top: 12px;
-      font-size: 0.88rem;
-      line-height: 1.7;
-      color: #92400E;
-    }
-    
-    .q-analysis-title {
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #B45309;
-    }
-    
-    .q-divider {
-      height: 1px;
-      background: var(--border);
-      margin: 20px 0;
-    }
-    
-    /* 词汇列表 */
-    .vocab-list { display: flex; flex-direction: column; gap: 8px; }
-    
-    .vocab-item {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 12px;
-      align-items: center;
-      padding: 12px 16px;
-      background: var(--bg);
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-    
-    .vocab-term {
-      font-weight: 600;
-      font-size: 0.92rem;
-      color: var(--primary);
-    }
-    
-    .vocab-def {
-      font-size: 0.85rem;
-      color: var(--text-light);
-      line-height: 1.5;
-    }
-    
-    .vocab-speak {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: var(--primary);
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-    
-    .vocab-speak:hover { background: var(--primary-light); transform: scale(1.1); }
-    
-    /* 笔记卡片 */
-    .note-card {
-      background: var(--bg);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border);
-    }
-    
-    .note-card h4 {
-      font-size: 0.92rem;
-      color: var(--primary);
-      margin-bottom: 8px;
-    }
-    
-    .note-card p {
-      font-size: 0.85rem;
-      color: var(--text);
-      line-height: 1.6;
-    }
-    
-    /* 记忆卡片 */
-    .fc-container {
-      max-width: 540px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    
-    .fc-progress {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    
-    .fc-stat {
-      background: var(--bg);
-      padding: 10px 20px;
-      border-radius: 10px;
-      text-align: center;
-      border: 1px solid var(--border);
-    }
-    
-    .fc-stat-num {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-    
-    .fc-stat-label {
-      font-size: 0.72rem;
-      color: var(--text-light);
-      margin-top: 2px;
-    }
-    
-    .fc-card {
-      background: white;
-      border-radius: 16px;
-      min-height: 260px;
-      padding: 28px 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    
-    .fc-label {
-      background: var(--primary);
-      color: white;
-      padding: 4px 16px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      margin-bottom: 16px;
-    }
-    
-    .fc-text {
-      font-size: 0.95rem;
-      line-height: 1.8;
-      white-space: pre-wrap;
-      text-align: left;
-      width: 100%;
-    }
-    
-    .fc-hint {
-      color: #9CA3AF;
-      font-size: 0.8rem;
-      margin-top: 16px;
-    }
-    
-    .fc-nav {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 20px;
-    }
-    
-    /* 加载状态 */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-light);
-    }
-    
-    .loading::after {
-      content: '';
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--primary);
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 0.8s linear infinite;
-      margin-left: 8px;
-      vertical-align: middle;
-    }
-    
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    /* 空状态 */
-    .empty-state {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-light);
-    }
-    
-    /* 考试介绍 */
-    .info-card {
-      background: var(--bg);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border);
-    }
-    
-    .info-card h4 { font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; }
-    .info-card p { font-size: 0.85rem; color: var(--text); line-height: 1.6; }
-    
-    /* 响应式 */
-    @media (max-width: 600px) {
-      .course-grid { grid-template-columns: 1fr; }
-      #app { margin: 10px; border-radius: 12px; }
-      .content { padding: 16px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SQE 学习系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--p:#5B4FCF;--pl:#7B6FEF;--bg:#EEF0FF;--c:#FFF;--t:#1E1E2F;--tl:#6B7280;--bd:#E5E7EB;--ok:#10B981;--er:#EF4444;--warn:#F59E0B;--r:12px}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.h{_display:none!important}
+#home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#EEF0FF 0%,#E8E6FF 50%,#F0EEFF 100%);padding:20px;text-align:center}
+.logo{width:80px;height:80px;background:linear-gradient(135deg,var(--p),var(--pl));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--c);margin-bottom:24px;box-shadow:0 8px 30px rgba(91,79,207,.3)}
+h1{font-size:2.2rem;font-weight:700;color:var(--t);margin-bottom:8px}
+.sub{font-size:1rem;color:var(--tl);margin-bottom:32px}
+.gap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{padding:12px 28px;border-radius:10px;font-size:.95rem;font-weight:500;cursor:pointer;border:none;transition:all .2s}
+.btn1{background:linear-gradient(135deg,var(--p),var(--pl));color:var(--c);box-shadow:0 4px 15px rgba(91,79,207,.3)}
+.btn1:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(91,79,207,.4)}
+.btn2{background:var(--c);color:var(--p);border:1.5px solid var(--p)}
+.btn2:hover{background:#F5F4FF}
+#app{max-width:860px;margin:20px auto;background:var(--c);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);overflow:hidden}
+.top{background:linear-gradient(135deg,var(--p),var(--pl));color:var(--c);padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+.top h2{font-size:1.1rem;font-weight:600}
+.top a{color:rgba(255,255,255,.85);text-decoration:none;font-size:.9rem}
+.top a:hover{color:var(--c)}
+.nav{display:flex;gap:6px;padding:12px 16px;background:#FAFAFA;border-bottom:1px solid var(--bd);overflow-x:auto}
+.nav::-webkit-scrollbar{height:0}
+.nb{padding:7px 14px;border-radius:8px;font-size:.82rem;font-weight:500;border:1px solid transparent;cursor:pointer;white-space:nowrap;background:var(--c);color:var(--tl);transition:all .15s}
+.nb:hover{border-color:var(--p);color:var(--p)}
+.nb.active{background:var(--p);color:var(--c);box-shadow:0 2px 8px rgba(91,79,207,.3)}
+.content{padding:24px}
+.tp{display:none}.tp.active{display:block}
+.pt{font-size:1.15rem;font-weight:600;color:var(--t);margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid var(--bg)}
+.sbox{width:100%;padding:10px 16px;border:1.5px solid var(--bd);border-radius:var(--r);font-size:.9rem;outline:none;margin-bottom:16px;transition:border-color .2s}
+.sbox:focus{border-color:var(--p)}
+.fb{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fb select{padding:7px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:.85rem;background:var(--c);cursor:pointer;outline:none}
+.cg{grid-template-columns:1fr 1fr;display:grid;gap:16px}
+.cc{background:var(--bg);border-radius:var(--r);padding:20px;border:1px solid var(--bd)}
+.cc h3{font-size:.95rem;color:var(--p);margin-bottom:8px}
+.ci{padding:8px 0;border-bottom:1px solid var(--bd)}
+.ci:last-child{border-bottom:none}
+.ct{font-weight:600;font-size:.88rem;color:var(--t);margin-bottom:2px}
+.cd{font-size:.78rem;color:var(--tl);line-height:1.4}
+.qc{background:var(--bg);border-radius:var(--r);padding:20px;margin-bottom:16px;border:1px solid var(--bd)}
+.qm{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.qb{padding:3px 10px;border-radius:20px;font-size:.75rem;font-weight:500}
+.qb1{background:#EEF0FF;color:var(--p)}
+.qb2{background:#FFF7ED;color:#D97706}
+.qn{font-size:.8rem;color:var(--tl);margin-bottom:8px}
+.qs{font-size:.92rem;line-height:1.7;color:var(--t);margin-bottom:16px}
+.qo{display:flex;flex-direction:column;gap:6px}
+.qopt{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;cursor:pointer;border:1.5px solid transparent;font-size:.88rem;transition:all .15s;background:var(--c)}
+.qopt:hover{border-color:var(--p)}
+.qopt.sel{border-color:var(--p);background:#F5F4FF}
+.qopt.crt{border-color:var(--ok);background:#D1FAE5}
+.qopt.wrg{border-color:var(--er);background:#FEE2E2}
+.ql{min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;background:var(--bg);color:var(--p);flex-shrink:0}
+.qopt.crt .ql{background:var(--ok);color:var(--c)}
+.qopt.wrg .ql{background:var(--er);color:var(--c)}
+.qa{display:flex;gap:8px;margin-top:12px}
+.qab{padding:8px 16px;border-radius:8px;font-size:.82rem;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.qac{background:var(--p);color:var(--c)}.qac:hover{opacity:.9}
+.qash{background:#F3F4F6;color:var(--t)}.qash:hover{background:#E5E7EB}
+.qan{background:var(--ok);color:var(--c)}
+.an{background:#FFFBEB;border:1px solid var(--warn);border-radius:var(--r);padding:16px;margin-top:12px;font-size:.88rem;line-height:1.7;color:#92400E}
+.an h4{font-weight:600;margin-bottom:6px;color:#B45309}
+.vl{display:flex;flex-direction:column;gap:8px}
+.vi{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 16px;background:var(--bg);border-radius:10px;border:1px solid var(--bd)}
+.vt{font-weight:600;font-size:.92rem;color:var(--p)}
+.vd{font-size:.85rem;color:var(--tl);line-height:1.5;margin-top:2px}
+.vsp{width:36px;height:36px;border-radius:50%;border:none;background:var(--p);color:var(--c);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.vsp:hover{background:var(--pl);transform:scale(1.1)}
+.nc{background:var(--bg);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--bd)}
+.nc h4{font-size:.92rem;color:var(--p);margin-bottom:8px}
+.nc p{font-size:.85rem;color:var(--t);line-height:1.6}
+.fc{max-width:540px;margin:0 auto;text-align:center}
+.fp{display:flex;gap:16px;justify-content:center;margin-bottom:20px}
+.fs{background:var(--bg);padding:10px 20px;border-radius:10px;text-align:center;border:1px solid var(--bd)}
+.fsn{font-size:1.3rem;font-weight:700;color:var(--p)}
+.fsl{font-size:.72rem;color:var(--tl);margin-top:2px}
+.fcard{background:var(--c);border-radius:16px;min-height:260px;padding:28px 24px;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.08);position:relative;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.fl{background:var(--p);color:var(--c);padding:4px 16px;border-radius:20px;font-size:.8rem;margin-bottom:16px}
+.ft{font-size:.95rem;line-height:1.8;white-space:pre-wrap;text-align:left;width:100%}
+.fh{color:#9CA3AF;font-size:.8rem;margin-top:16px}
+.fn{display:flex;justify-content:center;gap:12px;margin-top:20px}
+.es{text-align:center;padding:40px;color:var(--tl)}
+.ic{background:var(--bg);border-radius:var(--r);padding:16px;margin-bottom:12px;border:1px solid var(--bd)}
+.ic h4{font-size:.9rem;color:var(--p);margin-bottom:8px}
+.ic p{font-size:.85rem;color:var(--t);line-height:1.6}
+.dv{height:1px;background:var(--bd);margin:20px 0}
+@media(max-width:600px){.cg{grid-template-columns:1fr}#app{margin:10px;border-radius:12px}.content{padding:16px}}
+</style>
 </head>
 <body>
-
-<!-- 首页 -->
 <div id="home">
-  <div class="home-logo">🎓</div>
-  <h1 class="home-title">SQE 学习系统</h1>
-  <p class="home-sub">英国律师资格考试 · 精选题库 · 法律英语</p>
-  <div class="home-btn-group">
-    <button class="btn btn-primary" onclick="showLogin()">登录 开始学习</button>
-    <button class="btn btn-outline" onclick="enterApp()">直接进入</button>
+  <div class="logo">🎓</div>
+  <h1>SQE 学习系统</h1>
+  <p class="sub">英国律师资格考试 · 精选题库 · 法律英语</p>
+  <div class="gap">
+    <button class="btn btn1" onclick="showLogin()">登录 开始学习</button>
+    <button class="btn btn2" onclick="enterApp()">直接进入</button>
   </div>
 </div>
-
-<!-- 主应用 -->
-<div id="app" class="hidden">
-  <div class="top-nav">
+<div id="app" class="h">
+  <div class="top">
     <h2>🎓 SQE 学习系统</h2>
-    <a href="#" onclick="logout(); return false;">退出</a>
+    <a href="#" onclick="logout();return false;">退出</a>
   </div>
-  
   <div class="nav">
-    <button class="nav-btn active" onclick="goTab('course', this)">📘 课程</button>
-    <button class="nav-btn" onclick="goTab('practice', this)">📝 题库</button>
-    <button class="nav-btn" onclick="goTab('vocab', this)">📚 词汇</button>
-    <button class="nav-btn" onclick="goTab('notes', this)">📓 笔记</button>
-    <button class="nav-btn" onclick="goTab('exam', this)">📋 考试</button>
-    <button class="nav-btn" onclick="goTab('flashcard', this)">🃏 卡片</button>
+    <button class="nb active" onclick="goTab('course',this)">📘 课程</button>
+    <button class="nb" onclick="goTab('practice',this)">📝 题库</button>
+    <button class="nb" onclick="goTab('vocab',this)">📚 词汇</button>
+    <button class="nb" onclick="goTab('notes',this)">📓 笔记</button>
+    <button class="nb" onclick="goTab('exam',this)">📋 考试</button>
+    <button class="nb" onclick="goTab('flashcard',this)">🃏 卡片</button>
   </div>
-  
-  <!-- 课程模块 -->
-  <div id="tab-course" class="content tab-panel active">
-    <h2 class="panel-title">📗 FLK1 法律基础</h2>
-    <div class="course-grid">
-      <div class="course-card">
-        <h3>FLK1</h3>
-        <div class="course-item">
-          <div class="course-item-title">1. 宪法 Constitutional Law</div>
-          <div class="course-item-desc">英国宪法来源、议会主权、人权法案、欧盟法</div>
+  <div class="content">
+    <div id="tab-course" class="tp active">
+      <h2 class="pt">📗 FLK1 法律基础</h2>
+      <div class="cg">
+        <div class="cc"><h3>FLK1</h3>
+          <div class="ci"><div class="ct">1. 宪法 Constitutional Law</div><div class="cd">英国宪法来源、议会主权、人权法案、欧盟法</div></div>
+          <div class="ci"><div class="ct">2. 合同法 Contract Law</div><div class="cd">要约与承诺、对价、意思表示、合同效力</div></div>
+          <div class="ci"><div class="ct">3. 侵权法 Tort Law</div><div class="cd">过失、严格责任、诽谤、隐私权</div></div>
+          <div class="ci"><div class="ct">4. 商业法 Business Law</div><div class="cd">公司设立、董事义务、股东权利、清算</div></div>
+          <div class="ci"><div class="ct">5. 刑法 Criminal Law</div><div class="cd">犯罪要件、共同犯罪、抗辩理由</div></div>
         </div>
-        <div class="course-item">
-          <div class="course-item-title">2. 合同法 Contract Law</div>
-          <div class="course-item-desc">要约与承诺、对价、意思表示、合同效力</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">3. 侵权法 Tort Law</div>
-          <div class="course-item-desc">过失、严格责任、诽谤、隐私权</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">4. 商业法 Business Law</div>
-          <div class="course-item-desc">公司设立、董事义务、股东权利、清算</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">5. 刑法 Criminal Law</div>
-          <div class="course-item-desc">犯罪要件、共同犯罪、抗辩理由</div>
-        </div>
-      </div>
-      <div class="course-card">
-        <h3>FLK2</h3>
-        <div class="course-item">
-          <div class="course-item-title">1. 土地法 Land Law</div>
-          <div class="course-item-desc">产权类型、租赁权、抵押权、土地登记</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">2. 信托法 Equity & Trusts</div>
-          <div class="course-item-desc">信托设立、受益人权利、受托人义务</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">3. 遗嘱法 Wills & Estates</div>
-          <div class="course-item-desc">遗嘱效力、遗赠分类、遗产管理</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">4. 诉讼法 Civil Litigation</div>
-          <div class="course-item-desc">管辖权、诉讼程序、证据规则</div>
-        </div>
-        <div class="course-item">
-          <div class="course-item-title">5. 会计与财务 Solicitors Accounts</div>
-          <div class="course-item-desc">客户账户规则、资金处理</div>
+        <div class="cc"><h3>FLK2</h3>
+          <div class="ci"><div class="ct">1. 土地法 Land Law</div><div class="cd">产权类型、租赁权、抵押权、土地登记</div></div>
+          <div class="ci"><div class="ct">2. 信托法 Equity & Trusts</div><div class="cd">信托设立、受益人权利、受托人义务</div></div>
+          <div class="ci"><div class="ct">3. 遗嘱法 Wills & Estates</div><div class="cd">遗嘱效力、遗赠分类、遗产管理</div></div>
+          <div class="ci"><div class="ct">4. 诉讼法 Civil Litigation</div><div class="cd">管辖权、诉讼程序、证据规则</div></div>
+          <div class="ci"><div class="ct">5. 会计与财务 Solicitors Accounts</div><div class="cd">客户账户规则、资金处理</div></div>
         </div>
       </div>
     </div>
-  </div>
-  
-  <!-- 题库练习 -->
-  <div id="tab-practice" class="content tab-panel">
-    <h2 class="panel-title">📝 题库练习 <span id="qTotalInfo" style="font-size:0.8rem;color:var(--text-light);font-weight:400"></span></h2>
-    <div class="filter-bar">
-      <select id="qFLK" onchange="renderPractice()">
-        <option value="all">全部</option>
-        <option value="FLK1">FLK1</option>
-        <option value="FLK2">FLK2</option>
-      </select>
-      <select id="qSubject" onchange="renderPractice()">
-        <option value="all">全科目</option>
-        <option value="Constitutional">宪法</option>
-        <option value="Contract">合同法</option>
-        <option value="Tort">侵权法</option>
-        <option value="Business">商业法</option>
-        <option value="Criminal">刑法</option>
-        <option value="Land">土地法</option>
-        <option value="Trust">信托法</option>
-        <option value="Wills">遗嘱法</option>
-        <option value="Legal Services">法律服务</option>
-        <option value="Equity">衡平法</option>
-      </select>
-      <select id="qShow" onchange="renderPractice()">
-        <option value="20">显示20题</option>
-        <option value="50">显示50题</option>
-        <option value="100">显示100题</option>
-        <option value="500">显示500题</option>
-        <option value="1000">全部1000题</option>
-      </select>
+    <div id="tab-practice" class="tp">
+      <h2 class="pt">📝 题库练习 <span id="qTotalInfo" style="font-size:.8rem;color:var(--tl);font-weight:400"></span></h2>
+      <div class="fb">
+        <select id="qFLK" onchange="renderPractice()"><option value="all">全部</option><option value="FLK1">FLK1</option><option value="FLK2">FLK2</option></select>
+        <select id="qSubject" onchange="renderPractice()"><option value="all">全科目</option><option value="Constitutional">宪法</option><option value="Contract">合同法</option><option value="Tort">侵权法</option><option value="Business">商业法</option><option value="Criminal">刑法</option><option value="Land">土地法</option><option value="Trust">信托法</option><option value="Wills">遗嘱法</option><option value="Legal Services">法律服务</option><option value="Equity">衡平法</option></select>
+        <select id="qShow" onchange="renderPractice()"><option value="20">显示20题</option><option value="50">显示50题</option><option value="100">显示100题</option><option value="500">显示500题</option><option value="1000">全部1000题</option></select>
+      </div>
+      <div id="qList"></div>
     </div>
-    <div id="qList"></div>
-  </div>
-  
-  <!-- 法律英语 -->
-  <div id="tab-vocab" class="content tab-panel">
-    <h2 class="panel-title">📚 法律英语词汇 <span id="vCount" style="font-size:0.8rem;color:var(--text-light);font-weight:400"></span></h2>
-    <input type="text" class="search-box" id="vSearch" placeholder="搜索词汇..." oninput="searchVocab(this.value)">
-    <div class="filter-bar">
-      <select id="vSort" onchange="renderVocab()">
-        <option value="default">默认顺序</option>
-        <option value="alpha">按字母排序</option>
-        <option value="shuffle">随机</option>
-      </select>
+    <div id="tab-vocab" class="tp">
+      <h2 class="pt">📚 法律英语词汇 <span id="vCount" style="font-size:.8rem;color:var(--tl);font-weight:400"></span></h2>
+      <input type="text" class="sbox" id="vSearch" placeholder="搜索词汇..." oninput="renderVocab()">
+      <div class="fb">
+        <select id="vSort" onchange="renderVocab()"><option value="default">默认顺序</option><option value="alpha">按字母排序</option><option value="shuffle">随机</option></select>
+      </div>
+      <div id="vList" class="vl"></div>
     </div>
-    <div id="vList" class="vocab-list"></div>
-  </div>
-  
-  <!-- 笔记 -->
-  <div id="tab-notes" class="content tab-panel">
-    <h2 class="panel-title">📓 学习笔记</h2>
-    <div class="note-card">
-      <h4>合同法要点 Contract Law</h4>
-      <p>• 要约 Offer - 明确要约内容、意图受约束<br>
-• 承诺 Acceptance - 完全同意要约<br>
-• 对价 Consideration - 有价值的交换<br>
-• 意思表示 Intention - 建立法律关系意图<br>
-• 合同效力 Validity - 能力、对价、目的合法性</p>
+    <div id="tab-notes" class="tp">
+      <h2 class="pt">📓 学习笔记</h2>
+      <div class="nc"><h4>合同法要点 Contract Law</h4><p>• 要约 Offer - 明确要约内容、意图受约束<br>• 承诺 Acceptance - 完全同意要约<br>• 对价 Consideration - 有价值的交换<br>• 意思表示 Intention - 建立法律关系意图<br>• 合同效力 Validity - 能力、对价、目的合法性</p></div>
+      <div class="nc"><h4>侵权法三要素 Tort Elements</h4><p>1. Duty of care 注意义务<br>2. Breach 违反义务<br>3. Causation 因果关系<br>4. Damage 损害结果</p></div>
+      <div class="nc"><h4>信托三要素 Trust Elements</h4><p>1. Certainty of intention 意图确定<br>2. Certainty of subject matter 标的确信<br>3. Certainty of objects 对象确定</p></div>
     </div>
-    <div class="note-card">
-      <h4>侵权法三要素 Tort Elements</h4>
-      <p>1. Duty of care 注意义务<br>
-2. Breach 违反义务<br>
-3. Causation 因果关系<br>
-4. Damage 损害结果</p>
+    <div id="tab-exam" class="tp">
+      <h2 class="pt">📋 SQE 考试介绍</h2>
+      <div class="ic"><h4>考试结构</h4><p>SQE1 (法律功能知识测试) + SQE2 (法律实务技能评估)<br>由 SRA (Solicitors Regulation Authority) 统一组织</p></div>
+      <div class="ic"><h4>SQE1 内容</h4><p>• FLK1: 宪法、合同法、侵权法、商业法、刑法<br>• FLK2: 土地法、信托法、遗嘱法、诉讼法、会计<br>• 全部选择题，考察法律知识应用能力</p></div>
+      <div class="ic"><h4>考试费用</h4><p>• SQE1: 约 £1,558<br>• SQE2: 约 £2,392<br>• (以SRA官网最新信息为准)</p></div>
+      <div class="ic"><h4>官方信息</h4><p><a href="https://www.sra.org.uk" target="_blank" style="color:var(--p)">www.sra.org.uk</a></p></div>
     </div>
-    <div class="note-card">
-      <h4>信托三要素 Trust Elements</h4>
-      <p>1. Certainty of intention 意图确定<br>
-2. Certainty of subject matter 标的确信<br>
-3. Certainty of objects 对象确定</p>
-    </div>
-  </div>
-  
-  <!-- 考试介绍 -->
-  <div id="tab-exam" class="content tab-panel">
-    <h2 class="panel-title">📋 SQE 考试介绍</h2>
-    <div class="info-card">
-      <h4>考试结构</h4>
-      <p>SQE1 (法律功能知识测试) + SQE2 (法律实务技能评估)<br>由 SRA (Solicitors Regulation Authority) 统一组织</p>
-    </div>
-    <div class="info-card">
-      <h4>SQE1 内容</h4>
-      <p>• FLK1: 宪法、合同法、侵权法、商业法、刑法<br>
-• FLK2: 土地法、信托法、遗嘱法、诉讼法、会计<br>
-• 全部选择题，考察法律知识应用能力</p>
-    </div>
-    <div class="info-card">
-      <h4>考试费用</h4>
-      <p>• SQE1: 约 £1,558<br>
-• SQE2: 约 £2,392<br>
-• (以SRA官网最新信息为准)</p>
-    </div>
-    <div class="info-card">
-      <h4>官方信息</h4>
-      <p><a href="https://www.sra.org.uk" target="_blank" style="color:var(--primary)">www.sra.org.uk</a></p>
-    </div>
-  </div>
-  
-  <!-- 记忆卡片 -->
-  <div id="tab-flashcard" class="content tab-panel">
-    <div class="fc-container">
-      <div class="fc-progress">
-        <div class="fc-stat">
-          <div class="fc-stat-num" id="fcCurrent">1</div>
-          <div class="fc-stat-label">当前</div>
+    <div id="tab-flashcard" class="tp">
+      <div class="fc">
+        <div class="fp">
+          <div class="fs"><div class="fsn" id="fcCurrent">1</div><div class="fsl">当前</div></div>
+          <div class="fs"><div class="fsn" id="fcTotal">0</div><div class="fsl">总数</div></div>
         </div>
-        <div class="fc-stat">
-          <div class="fc-stat-num" id="fcTotal">0</div>
-          <div class="fc-stat-label">总数</div>
+        <div class="fb" style="justify-content:center;">
+          <select id="fcFilter" onchange="initFC()" style="padding:7px 12px;border:1.5px solid var(--bd);border-radius:8px;font-size:.85rem;"><option value="all">全部</option><option value="FLK1">FLK1</option><option value="FLK2">FLK2</option></select>
         </div>
-      </div>
-      <div class="filter-bar" style="justify-content:center;">
-        <select id="fcFilter" onchange="filterFC()" style="padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:0.85rem;">
-          <option value="all">全部</option>
-          <option value="FLK1">FLK1</option>
-          <option value="FLK2">FLK2</option>
-        </select>
-      </div>
-      <div class="fc-card" id="fcCard" onclick="flipFC()">
-        <div class="fc-label" id="fcLabel">问题</div>
-        <div class="fc-text" id="fcText">点击开始学习</div>
-        <div class="fc-hint">点击卡片翻转</div>
-      </div>
-      <div class="fc-nav">
-        <button class="btn btn-outline" onclick="prevFC()" style="padding:8px 20px;font-size:0.85rem;border-radius:8px;">◀ 上一张</button>
-        <button class="btn btn-primary" onclick="nextFC()" style="padding:8px 20px;font-size:0.85rem;border-radius:8px;">下一张 ▶</button>
+        <div class="fcard" id="fcCard" onclick="flipFC()">
+          <div class="fl" id="fcLabel">问题</div>
+          <div class="ft" id="fcText">点击开始学习</div>
+          <div class="fh">点击卡片翻转</div>
+        </div>
+        <div class="fn">
+          <button class="btn btn2" onclick="prevFC()" style="padding:8px 20px;font-size:.85rem;border-radius:8px;">◀ 上一张</button>
+          <button class="btn btn1" onclick="nextFC()" style="padding:8px 20px;font-size:.85rem;border-radius:8px;">下一张 ▶</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
 <script>
-// ==================== 数据 ====================
-var sqeQuestions = [];
-var sqeVocab = [];
-var fcData = [];
-
-// ==================== 发音 ====================
-var voices = [];
-function loadVoices() {
-  voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-}
-window.speechSynthesis.onvoiceschanged = loadVoices;
-loadVoices();
-
-function speak(text) {
+var sqeQuestions=[],sqeVocab=[];
+var voices=[];
+function loadVoices(){voices=window.speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'));}
+window.speechSynthesis.onvoiceschanged=loadVoices;loadVoices();
+function speak(t){
   window.speechSynthesis.cancel();
-  var utt = new SpeechSynthesisUtterance(text);
-  // 优先找英式女声
-  var enGB = voices.find(v => v.lang === 'en-GB' && v.name.toLowerCase().includes('female')) ||
-                  voices.find(v => v.lang === 'en-GB') ||
-                  voices.find(v => v.lang.startsWith('en-GB')) ||
-                  voices.find(v => v.name.toLowerCase().includes('female')) ||
-                  voices.find(v => v.lang.startsWith('en'));
-  if (enGB) utt.voice = enGB;
-  utt.rate = 0.9;
-  utt.pitch = 1.1;
-  utt.lang = 'en-GB';
-  window.speechSynthesis.speak(utt);
+  var u=new SpeechSynthesisUtterance(t);
+  var v=voices.find(x=>x.lang==='en-GB')||voices.find(x=>x.lang.startsWith('en-GB'))||voices.find(x=>x)||voices[0];
+  if(v)u.voice=v;
+  u.lang='en-GB';u.rate=.9;u.pitch=1.1;
+  window.speechSynthesis.speak(u);
 }
-
-// ==================== 导航 ====================
-function goTab(tab, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  var panel = document.getElementById('tab-' + tab);
-  if (panel) panel.classList.add('active');
-  if (btn) btn.classList.add('active');
-  
-  if (tab === 'practice' && sqeQuestions.length) renderPractice();
-  if (tab === 'vocab' && sqeVocab.length) renderVocab();
-  if (tab === 'flashcard' && sqeQuestions.length) initFC();
+function goTab(tab,btn){
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  var p=document.getElementById('tab-'+tab);
+  if(p)p.classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(tab==='practice'&&sqeQuestions.length)renderPractice();
+  if(tab==='vocab'&&sqeVocab.length)renderVocab();
+  if(tab==='flashcard'&&sqeQuestions.length)initFC();
 }
-
-function showLogin() { alert('登录功能开发中'); }
-function enterApp() {
-  document.getElementById('home').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  if (!sqeQuestions.length) loadData();
+function showLogin(){alert('登录功能开发中');}
+function enterApp(){
+  document.getElementById('home').classList.add('h');
+  document.getElementById('app').classList.remove('h');
+  if(!sqeQuestions.length)loadData();
 }
-function logout() {
-  document.getElementById('app').classList.add('hidden');
-  document.getElementById('home').classList.remove('hidden');
+function logout(){
+  document.getElementById('app').classList.add('h');
+  document.getElementById('home').classList.remove('h');
 }
-
-// ==================== 数据加载 ====================
-function loadData() {
-  var qScript = document.createElement('script');
-  qScript.src = 'sqe_questions.js';
-  qScript.onload = function() {
-    var vScript = document.createElement('script');
-    vScript.src = 'sqe_vocab.js';
-    vScript.onload = function() {
-      document.getElementById('qTotalInfo').textContent = '共 ' + sqeQuestions.length + ' 题';
-      document.getElementById('vCount').textContent = '共 ' + sqeVocab.length + ' 个词汇';
-    };
-    document.head.appendChild(vScript);
+function loadData(){
+  var qs=document.createElement('script');
+  qs.src='sqe_questions.js';
+  qs.onload=function(){
+    document.getElementById('qTotalInfo').textContent='共 '+(sqeQuestions.length||0)+' 题';
+    if(document.getElementById('tab-practice').classList.contains('active'))renderPractice();
   };
-  document.head.appendChild(qScript);
+  document.head.appendChild(qs);
+  var vs=document.createElement('script');
+  vs.src='sqe_vocab.js';
+  vs.onload=function(){
+    document.getElementById('vCount').textContent='共 '+(sqeVocab.length||0)+' 个词汇';
+    if(document.getElementById('tab-vocab').classList.contains('active'))renderVocab();
+  };
+  document.head.appendChild(vs);
 }
-
-// ==================== 题库 ====================
-function renderPractice() {
-  var flk = document.getElementById('qFLK').value;
-  var subject = document.getElementById('qSubject').value;
-  var show = parseInt(document.getElementById('qShow').value);
-  
-  var filtered = sqeQuestions.filter(q => {
-    if (flk !== 'all' && q.flk !== flk) return false;
-    if (subject !== 'all') {
-      var s = q.subject || '';
-      var match = s.toLowerCase().includes(subject.toLowerCase());
-      if (!match && q.category === subject) match = true;
-      if (!match) {
-        var map = {Constitutional:'宪法',Contract:'合同法',Tort:'侵权法',Business:'商业法',Criminal:'刑法',Land:'土地法',Trust:'信托法',Wills:'遗嘱法'};
-        var zh = map[subject] || '';
-        if (zh && (q.flk + q.category).includes(zh)) match = true;
-      }
-      if (!match) return false;
+function renderPractice(){
+  var flk=document.getElementById('qFLK').value;
+  var subj=document.getElementById('qSubject').value;
+  var show=parseInt(document.getElementById('qShow').value)||20;
+  var all=sqeQuestions.filter(q=>{
+    if(flk!=='all'&&q.flk!==flk)return false;
+    if(subj!=='all'){
+      var s=(q.subject||'').toLowerCase();
+      if(!s)return false;
+      var m=s.includes(subj.toLowerCase())||(q.category||'').toLowerCase().includes(subj.toLowerCase());
+      if(!m)return false;
     }
     return true;
   });
-  
-  var showQs = filtered.slice(0, show);
-  var el = document.getElementById('qList');
-  
-  if (showQs.length === 0) {
-    el.innerHTML = '<div class="empty-state">暂无符合条件的题目</div>';
-    return;
-  }
-  
-  var html = '';
-  showQs.forEach(function(q, i) {
-    var opts = ['A','B','C','D','E'].filter(k => q.opts && q.opts[k]);
-    html += '<div class="q-card" id="q-' + i + '">';
-    html += '<div class="q-meta"><span class="q-badge q-badge-flk">' + (q.flk||'') + '</span><span class="q-badge q-badge-cat">' + (q.category||'') + '</span></div>';
-    html += '<div class="q-num">第 ' + (i+1) + ' 题</div>';
-    html += '<div class="q-stem">' + (q.stem||'') + '</div>';
-    html += '<div class="q-opts">';
-    opts.forEach(function(k) {
-      html += '<div class="q-opt" onclick="selectOpt(' + i + ',\'' + k + '\')" id="q-' + i + '-opt-' + k + '">';
-      html += '<span class="q-opt-letter">' + k + '</span>';
-      html += '<span>' + (q.opts[k]||'') + '</span></div>';
+  var qs=all.slice(0,show);
+  var el=document.getElementById('qList');
+  if(!qs.length){el.innerHTML='<div class="es">暂无符合条件的题目</div>';return;}
+  var h='';
+  qs.forEach(function(q,i){
+    var opts=['A','B','C','D','E'].filter(k=>q.opts&&q.opts[k]);
+    h+='<div class="qc" id="q-'+i+'">';
+    h+='<div class="qm"><span class="qb qb1">'+(q.flk||'')+'</span><span class="qb qb2">'+(q.category||'')+'</span></div>';
+    h+='<div class="qn">第 '+(i+1)+' 题</div>';
+    h+='<div class="qs">'+(q.stem||'')+'</div>';
+    h+='<div class="qo">';
+    opts.forEach(function(k){
+      h+='<div class="qopt" onclick="selectOpt('+i+',\''+k+'\')" id="q-'+i+'-opt-'+k+'">';
+      h+='<span class="ql">'+k+'</span><span>'+(q.opts[k]||'')+'</span></div>';
     });
-    html += '</div>';
-    html += '<div class="q-actions" id="q-' + i + '-actions">';
-    html += '<button class="q-btn q-btn-check" onclick="checkAns(' + i + ')">检查答案</button>';
-    html += '<button class="q-btn q-btn-answer" onclick="showAns(' + i + ')">显示解析</button>';
-    html += '</div>';
-    html += '<div id="q-' + i + '-result"></div>';
-    html += '<div id="q-' + i + '-analysis" style="display:none;"></div>';
-    html += '</div>';
-    if (i < showQs.length - 1) html += '<div class="q-divider"></div>';
+    h+='</div>';
+    h+='<div class="qa"><button class="qab qac" onclick="checkAns('+i+')">检查答案</button><button class="qab qash" onclick="showAns('+i+')">显示解析</button></div>';
+    h+='<div id="q-'+i+'-result"></div>';
+    h+='<div id="q-'+i+'-analysis" style="display:none;"></div>';
+    h+='</div>';
+    if(i<qs.length-1)h+='<div class="dv"></div>';
   });
-  
-  el.innerHTML = html;
+  el.innerHTML=h;
 }
-
-function selectOpt(qi, k) {
-  var card = document.getElementById('q-' + qi);
-  if (!card) return;
-  card.querySelectorAll('.q-opt').forEach(function(o) { o.classList.remove('selected'); });
-  var opt = document.getElementById('q-' + qi + '-opt-' + k);
-  if (opt) opt.classList.add('selected');
+function selectOpt(qi,k){
+  var c=document.getElementById('q-'+qi);
+  if(!c)return;
+  c.querySelectorAll('.qopt').forEach(function(o){o.classList.remove('sel');});
+  var o=document.getElementById('q-'+qi+'-opt-'+k);
+  if(o)o.classList.add('sel');
 }
-
-function checkAns(qi) {
-  var card = document.getElementById('q-' + qi);
-  if (!card) return;
-  var selected = card.querySelector('.q-opt.selected');
-  if (!selected) { alert('请先选择一个选项'); return; }
-  var k = selected.querySelector('.q-opt-letter').textContent;
-  var qs = getFilteredQs();
-  if (qi >= qs.length) return;
-  var q = qs[qi];
-  var correct = (q.answer || '').toUpperCase();
-  card.querySelectorAll('.q-opt').forEach(function(o) {
-    var lk = o.querySelector('.q-opt-letter').textContent;
-    o.classList.remove('correct', 'wrong');
-    if (lk === correct) o.classList.add('correct');
-  });
-  if (k !== correct && selected) selected.classList.add('wrong');
-  
-  var res = document.getElementById('q-' + qi + '-result');
-  if (res) {
-    var isCorrect = k === correct;
-    res.innerHTML = isCorrect
-      ? '<div style="color:var(--success);font-weight:600;padding:8px 0;">✓ 回答正确</div>'
-      : '<div style="color:var(--error);font-weight:600;padding:8px 0;">✗ 回答错误，正确答案是 ' + correct + '</div>';
-  }
-  
-  var anaEl = document.getElementById('q-' + qi + '-analysis');
-  if (anaEl && q.analysis) {
-    anaEl.style.display = 'block';
-    anaEl.innerHTML = '<div class="q-analysis"><div class="q-analysis-title">💡 解析</div>' + q.analysis + '</div>';
-  }
-}
-
-function showAns(qi) {
-  var qs = getFilteredQs();
-  if (qi >= qs.length) return;
-  var q = qs[qi];
-  var card = document.getElementById('q-' + qi);
-  if (!card) return;
-  
-  var correct = (q.answer || '').toUpperCase();
-  card.querySelectorAll('.q-opt').forEach(function(o) {
-    var lk = o.querySelector('.q-opt-letter').textContent;
-    if (lk === correct) o.classList.add('correct');
-  });
-  
-  var res = document.getElementById('q-' + qi + '-result');
-  if (res) {
-    res.innerHTML = '<div style="color:var(--text-light);font-size:0.85rem;padding:6px 0;">正确答案: <strong style="color:var(--primary);">' + correct + '</strong></div>';
-  }
-  
-  var anaEl = document.getElementById('q-' + qi + '-analysis');
-  if (anaEl && q.analysis) {
-    anaEl.style.display = 'block';
-    anaEl.innerHTML = '<div class="q-analysis"><div class="q-analysis-title">💡 解析</div>' + q.analysis + '</div>';
-  }
-}
-
-function getFilteredQs() {
-  var flk = document.getElementById('qFLK').value;
-  var subject = document.getElementById('qSubject').value;
-  return sqeQuestions.filter(q => {
-    if (flk !== 'all' && q.flk !== flk) return false;
-    if (subject !== 'all') {
-      var s = q.subject || '';
-      var match = s.toLowerCase().includes(subject.toLowerCase());
-      if (!match && q.category === subject) match = true;
-      if (!match) return false;
+function getFiltered(){
+  var flk=document.getElementById('qFLK').value;
+  var subj=document.getElementById('qSubject').value;
+  return sqeQuestions.filter(q=>{
+    if(flk!=='all'&&q.flk!==flk)return false;
+    if(subj!=='all'){
+      var s=(q.subject||'').toLowerCase();
+      if(!s)return false;
+      if(!s.includes(subj.toLowerCase())&&!(q.category||'').toLowerCase().includes(subj.toLowerCase()))return false;
     }
     return true;
   });
 }
-
-// ==================== 词汇 ====================
-function renderVocab() {
-  var sort = document.getElementById('vSort').value;
-  var search = document.getElementById('vSearch').value.trim().toLowerCase();
-  var list = sqeVocab;
-  
-  if (search) {
-    list = list.filter(v => v.term.toLowerCase().includes(search) || v.definition.toLowerCase().includes(search));
-  }
-  
-  if (sort === 'alpha') {
-    list = list.slice().sort(function(a,b){ return a.term.localeCompare(b.term); });
-  } else if (sort === 'shuffle') {
-    list = list.slice().sort(function(){ return 0.5 - Math.random(); });
-  }
-  
-  var el = document.getElementById('vList');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty-state">未找到词汇</div>';
-    return;
-  }
-  
-  var html = '';
-  list.forEach(function(v, i) {
-    html += '<div class="vocab-item">';
-    html += '<div>';
-    html += '<div class="vocab-term">' + v.term + '</div>';
-    html += '<div class="vocab-def">' + v.definition + '</div>';
-    html += '</div>';
-    html += '<button class="vocab-speak" onclick="speak(\'' + v.term.replace(/'/g,"\\'") + '\')" title="朗读">🔊</button>';
-    html += '</div>';
+function checkAns(qi){
+  var c=document.getElementById('q-'+qi);
+  if(!c)return;
+  var sel=c.querySelector('.qopt.sel');
+  if(!sel){alert('请先选择一个选项');return;}
+  var k=sel.querySelector('.ql').textContent;
+  var all=getFiltered();
+  if(qi>=all.length)return;
+  var q=all[qi];
+  var corr=(q.answer||'').toUpperCase();
+  c.querySelectorAll('.qopt').forEach(function(o){
+    var lk=o.querySelector('.ql').textContent;
+    o.classList.remove('crt','wrg');
+    if(lk===corr)o.classList.add('crt');
   });
-  
-  el.innerHTML = html;
+  if(k!==corr&&sel)sel.classList.add('wrg');
+  var res=document.getElementById('q-'+qi+'-result');
+  if(res)res.innerHTML=k===corr?'<div style="color:var(--ok);font-weight:600;padding:8px 0;">✓ 回答正确</div>':'<div style="color:var(--er);font-weight:600;padding:8px 0;">✗ 回答错误，正确答案是 '+corr+'</div>';
+  var ae=document.getElementById('q-'+qi+'-analysis');
+  if(ae&&q.analysis){ae.style.display='block';ae.innerHTML='<div class="an"><h4>💡 解析</h4>'+q.analysis+'</div>';}
 }
-
-function searchVocab(val) { renderVocab(); }
-
-// ==================== 记忆卡片 ====================
-var fcIndex = 0;
-var fcFlipped = false;
-var fcFiltered = [];
-
-function initFC() {
-  var filter = document.getElementById('fcFilter').value;
-  fcFiltered = sqeQuestions.filter(q => filter === 'all' || q.flk === filter);
-  fcIndex = 0;
-  fcFlipped = false;
-  document.getElementById('fcTotal').textContent = fcFiltered.length;
-  document.getElementById('fcCurrent').textContent = Math.min(fcIndex + 1, fcFiltered.length);
+function showAns(qi){
+  var all=getFiltered();
+  if(qi>=all.length)return;
+  var q=all[qi];
+  var c=document.getElementById('q-'+qi);
+  if(!c)return;
+  var corr=(q.answer||'').toUpperCase();
+  c.querySelectorAll('.qopt').forEach(function(o){
+    var lk=o.querySelector('.ql').textContent;
+    if(lk===corr)o.classList.add('crt');
+  });
+  var res=document.getElementById('q-'+qi+'-result');
+  if(res)res.innerHTML='<div style="color:var(--tl);font-size:.85rem;padding:6px 0;">正确答案: <strong style="color:var(--p);">'+corr+'</strong></div>';
+  var ae=document.getElementById('q-'+qi+'-analysis');
+  if(ae&&q.analysis){ae.style.display='block';ae.innerHTML='<div class="an"><h4>💡 解析</h4>'+q.analysis+'</div>';}
+}
+function renderVocab(){
+  var sort=document.getElementById('vSort').value;
+  var search=(document.getElementById('vSearch').value||'').trim().toLowerCase();
+  var list=sqeVocab;
+  if(search)list=list.filter(v=>v.term.toLowerCase().includes(search)||v.definition.toLowerCase().includes(search));
+  if(sort==='alpha')list=list.slice().sort(function(a,b){return a.term.localeCompare(b.term);});
+  else if(sort==='shuffle')list=list.slice().sort(function(){return.5-Math.random();});
+  var el=document.getElementById('vList');
+  if(!list.length){el.innerHTML='<div class="es">未找到词汇</div>';return;}
+  var h='';
+  list.forEach(function(v){
+    h+='<div class="vi">';
+    h+='<div><div class="vt">'+v.term+'</div><div class="vd">'+v.definition+'</div></div>';
+    h+='<button class="vsp" onclick="speak(\''+v.term.replace(/'/g,"\\'")+'\')" title="朗读">🔊</button>';
+    h+='</div>';
+  });
+  el.innerHTML=h;
+}
+var fcIdx=0,fcFlip=false,fcFiltered=[];
+function initFC(){
+  var f=document.getElementById('fcFilter').value;
+  fcFiltered=sqeQuestions.filter(q=>f==='all'||q.flk===f);
+  fcIdx=0;fcFlip=false;
+  document.getElementById('fcTotal').textContent=fcFiltered.length;
+  document.getElementById('fcCurrent').textContent=Math.min(fcIdx+1,fcFiltered.length);
   renderFC();
 }
-
-function filterFC() { initFC(); }
-
-function renderFC() {
-  if (!fcFiltered.length) {
-    document.getElementById('fcText').textContent = '暂无卡片';
-    return;
+function renderFC(){
+  if(!fcFiltered.length){document.getElementById('fcText').textContent='暂无卡片';return;}
+  var q=fcFiltered[fcIdx];
+  fcFlip=false;
+  document.getElementById('fcLabel').textContent='问题';
+  document.getElementById('fcText').textContent=q.stem||'无题目内容';
+  document.getElementById('fcCurrent').textContent=fcIdx+1;
+}
+function flipFC(){
+  if(!fcFiltered.length)return;
+  var q=fcFiltered[fcIdx];
+  if(!fcFlip){
+    document.getElementById('fcLabel').textContent='✓ 答案: '+(q.answer||'?');
+    var opt=(q.opts[q.answer]||'');
+    document.getElementById('fcText').innerHTML='<div style="margin-bottom:8px;">'+(q.stem||'')+'</div><div style="color:var(--ok);font-weight:600;">'+(q.answer||'')+'. '+opt+'</div>'+(q.analysis?'<div style="margin-top:12px;font-size:.85rem;color:var(--tl);line-height:1.6;">'+q.analysis+'</div>':'');
+  }else{
+    document.getElementById('fcLabel').textContent='问题';
+    document.getElementById('fcText').textContent=q.stem||'';
   }
-  var q = fcFiltered[fcIndex];
-  fcFlipped = false;
-  document.getElementById('fcLabel').textContent = '问题';
-  document.getElementById('fcText').textContent = q.stem || '无题目内容';
-  document.getElementById('fcCurrent').textContent = fcIndex + 1;
+  fcFlip=!fcFlip;
 }
-
-function flipFC() {
-  if (!fcFiltered.length) return;
-  var q = fcFiltered[fcIndex];
-  if (!fcFlipped) {
-    document.getElementById('fcLabel').textContent = '✓ 答案: ' + (q.answer || '?');
-    var optText = (q.opts[q.answer] || '');
-    document.getElementById('fcText').innerHTML = '<div style="margin-bottom:8px;">' + (q.stem||'') + '</div><div style="color:var(--success);font-weight:600;">' + q.answer + '. ' + optText + '</div>' + (q.analysis ? '<div style="margin-top:12px;font-size:0.85rem;color:var(--text-light);line-height:1.6;">' + q.analysis + '</div>' : '');
-  } else {
-    document.getElementById('fcLabel').textContent = '问题';
-    document.getElementById('fcText').textContent = q.stem || '';
-  }
-  fcFlipped = !fcFlipped;
-}
-
-function prevFC() {
-  if (!fcFiltered.length) return;
-  fcIndex = Math.max(0, fcIndex - 1);
-  renderFC();
-}
-
-function nextFC() {
-  if (!fcFiltered.length) return;
-  fcIndex = Math.min(fcFiltered.length - 1, fcIndex + 1);
-  renderFC();
-}
+function prevFC(){if(!fcFiltered.length)return;fcIdx=Math.max(0,fcIdx-1);renderFC();}
+function nextFC(){if(!fcFiltered.length)return;fcIdx=Math.min(fcFiltered.length-1,fcIdx+1);renderFC();}
 </script>
 </body>
 </html>
