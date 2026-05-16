@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SQE 学习系统</title>
+  <script src="sqe_questions.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
@@ -56,15 +57,29 @@
     .list li { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
     .list li:before { content: "• "; color: #4f46e5; }
     
-    /* 题库 */
-    .question { background: #f9fafb; padding: 15px; margin: 10px 0; border-radius: 8px; }
-    .question h4 { color: #333; margin-bottom: 10px; }
+    /* 题库 - 新增样式 */
+    .question { background: #f9fafb; padding: 20px; margin: 15px 0; border-radius: 12px; border: 1px solid #e5e7eb; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .question-number { background: #4f46e5; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+    .question-category { background: #f3f4f6; color: #666; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; }
+    .question-stem { font-size: 1rem; line-height: 1.7; color: #333; margin-bottom: 15px; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #4f46e5; }
     .options { margin-top: 10px; }
-    .option { padding: 8px 12px; margin: 5px 0; background: white; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; }
-    .option:hover { border-color: #4f46e5; }
+    .option { padding: 12px 15px; margin: 8px 0; background: white; border: 2px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: flex-start; }
+    .option:hover { border-color: #4f46e5; background: #f0f0ff; }
+    .option-letter { font-weight: bold; color: #4f46e5; margin-right: 10px; min-width: 25px; }
+    .option-text { flex: 1; line-height: 1.5; }
     .option.correct { background: #d1fae5; border-color: #10b981; }
+    .option.correct .option-letter { color: #10b981; }
     .option.wrong { background: #fee2e2; border-color: #ef4444; }
-    .analysis { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin-top: 15px; font-size: 0.9rem; line-height: 1.6; color: #333; }
+    .option.wrong .option-letter { color: #ef4444; }
+    .option.selected { border-color: #4f46e5; background: #e0e7ff; }
+    .option.selected .option-letter { color: #4f46e5; }
+    .option.disabled { cursor: not-allowed; opacity: 0.7; }
+    .analysis { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 12px; padding: 20px; margin-top: 20px; font-size: 0.95rem; line-height: 1.8; color: #333; }
+    .analysis-header { display: flex; align-items: center; margin-bottom: 10px; font-weight: bold; color: #d97706; }
+    .analysis-header span { margin-left: 8px; }
+    .question-actions { margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .result-icon { font-size: 1.5rem; margin-right: 8px; }
     
     /* 词汇表 */
     .vocab { display: flex; justify-content: space-between; padding: 10px; margin: 5px 0; background: #f3f4f6; border-radius: 5px; }
@@ -91,24 +106,36 @@
     .search-box { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; margin-bottom: 15px; }
     
     /* 筛选 */
-    .filter { margin-bottom: 15px; }
-    .filter select { padding: 8px 15px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px; }
+    .filter { margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .filter select { padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.95rem; min-width: 150px; }
+    .filter-label { font-weight: 500; color: #333; }
+    .question-count { background: #e0e7ff; color: #4f46e5; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; font-weight: 500; }
+    
+    /* 统计信息 */
+    .stats-info { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
+    .stats-info .stat-item { flex: 1; }
+    .stats-info .stat-value { font-size: 1.5rem; font-weight: bold; }
+    .stats-info .stat-text { font-size: 0.85rem; opacity: 0.9; }
+    
+    /* 反馈消息 */
+    .feedback { padding: 15px 20px; border-radius: 8px; margin-top: 15px; font-weight: 500; display: flex; align-items: center; }
+    .feedback.correct { background: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+    .feedback.wrong { background: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+    .feedback-icon { font-size: 1.3rem; margin-right: 10px; }
   </style>
 </head>
 <body>
-
 <!-- 首页 -->
 <div id="home">
   <div class="container">
     <h1>🎓 SQE 学习系统</h1>
-    <p class="subtitle">英国律师资格考试学习平台</p>
+    <p class="subtitle">英国律师资格考试学习平台 - 1000道精选题目</p>
     <div>
       <button class="btn btn-white" onclick="showLogin()">登录 开始学习</button>
       <button class="btn btn-outline" onclick="enterApp()">直接进入</button>
     </div>
   </div>
 </div>
-
 <!-- 主应用 -->
 <div id="app" class="hidden">
   <div class="top-nav">
@@ -128,7 +155,7 @@
     <button class="btn" onclick="goTab('exam', this)">📋 考试介绍</button>
     <button class="btn btn-purple" onclick="goTab('flashcards', this)">🎴 记忆卡片</button>
   </div>
-
+  
   <!-- 课程模块 -->
   <div id="tab-course" class="tab-content">
     <div class="section">
@@ -163,7 +190,7 @@
       </div>
       <div class="card">
         <h4>2. 信托法 Equity & Trusts</h4>
-        <p>信托设立、受益人权利、受托人义务、 Resulting & Constructive Trust</p>
+        <p>信托设立、受益人权利、受托人义务、Resulting & Constructive Trust</p>
       </div>
       <div class="card">
         <h4>3. 遗嘱与遗产 Wills & Estates</h4>
@@ -175,25 +202,47 @@
       </div>
     </div>
   </div>
-
+  
   <!-- 题库练习 -->
   <div id="tab-practice" class="tab-content hidden">
     <div class="section">
-      <h3>📝 模拟练习</h3>
+      <h3>📝 模拟练习 - SQE精选题库</h3>
+      <div class="stats-info">
+        <div class="stat-item">
+          <div class="stat-value" id="totalQuestions">1000</div>
+          <div class="stat-text">总题数</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="filteredCount">1000</div>
+          <div class="stat-text">当前筛选</div>
+        </div>
+      </div>
       <div class="filter">
+        <span class="filter-label">筛选类别:</span>
         <select id="qCategory" onchange="filterQuestions()">
           <option value="all">全部题目</option>
+          <option value="FLK1">FLK1 全部</option>
+          <option value="FLK2">FLK2 全部</option>
           <option value="contract">合同法</option>
           <option value="tort">侵权法</option>
           <option value="land">土地法</option>
           <option value="trust">信托法</option>
           <option value="wills">遗嘱法</option>
+          <option value="criminal">刑法</option>
+          <option value="business">商业法</option>
+          <option value="constitutional">宪法</option>
+          <option value="legal-services">法律服务</option>
+          <option value="equity">衡平法</option>
+          <option value="accounts">会计与财务</option>
+          <option value="civil-procedure">民事诉讼法</option>
+          <option value="ethics-and-regulation">职业操守</option>
         </select>
+        <span class="question-count" id="questionCountBadge">共 1000 题</span>
       </div>
       <div id="questionList"></div>
     </div>
   </div>
-
+  
   <!-- 法律英语 -->
   <div id="tab-vocabulary" class="tab-content hidden">
     <div class="section">
@@ -202,45 +251,59 @@
       <div id="vocabList"></div>
     </div>
   </div>
-
+  
   <!-- 笔记 -->
   <div id="tab-notes" class="tab-content hidden">
     <div class="section">
       <h3>📓 我的笔记</h3>
       <div class="card">
         <h4>合同法要点总结</h4>
-        <p>• 要约offer - 明确要约内容<br>• 承诺acceptance - 完全同意要约<br>• 对价consideration - 有价值的交换</p>
+        <p>• 要约offer - 明确要约内容
+• 承诺acceptance - 完全同意要约
+• 对价consideration - 有价值的交换</p>
       </div>
       <div class="card">
         <h4>侵权法三要素</h4>
-        <p>1. Duty of care 注意义务<br>2. Breach 违反义务<br>3. Causation 因果关系</p>
+        <p>1. Duty of care 注意义务
+2. Breach 违反义务
+3. Causation 因果关系</p>
       </div>
       <div class="card">
         <h4>信托三要素</h4>
-        <p>1. Certainty of intention 意图确定<br>2. Certainty of subject matter 标的确信<br>3. Certainty of objects 对象确定</p>
+        <p>1. Certainty of intention 意图确定
+2. Certainty of subject matter 标的确信
+3. Certainty of objects 对象确定</p>
       </div>
     </div>
   </div>
-
+  
   <!-- 考试介绍 -->
   <div id="tab-exam" class="tab-content hidden">
     <div class="section">
       <h3>📋 SQE 考试介绍</h3>
       <div class="card">
         <h4>考试结构</h4>
-        <p>• SQE1: 法律功能知识测试 (FLK1)<br>• SQE2: 法律实务技能评估<br>• 由 SRA (Solicitors Regulation Authority) 组织</p>
+        <p>• SQE1: 法律功能知识测试 (FLK1)
+• SQE2: 法律实务技能评估
+• 由 SRA (Solicitors Regulation Authority) 组织</p>
       </div>
       <div class="card">
         <h4>SQE1 考试内容</h4>
-        <p>• 覆盖 FLK1 和 FLK2 范围<br>• 选择题形式<br>• 测试法律知识应用</p>
+        <p>• 覆盖 FLK1 和 FLK2 范围
+• 选择题形式
+• 测试法律知识应用</p>
       </div>
       <div class="card">
         <h4>SQE2 考试内容</h4>
-        <p>• 实务技能评估<br>• 案例分析<br>• 法律写作</p>
+        <p>• 实务技能评估
+• 案例分析
+• 法律写作</p>
       </div>
       <div class="card">
         <h4>考试费用</h4>
-        <p>• SQE1: 约 £1,558<br>• SQE2: 约 £2,392<br>• (具体以SRA官网为准)</p>
+        <p>• SQE1: 约 £1,558
+• SQE2: 约 £2,392
+• (具体以SRA官网为准)</p>
       </div>
       <div class="card">
         <h4>🔗 官方信息</h4>
@@ -248,7 +311,7 @@
       </div>
     </div>
   </div>
-
+  
   <!-- 记忆卡片 -->
   <div id="tab-flashcards" class="tab-content hidden">
     <div class="flashcard-container">
@@ -301,10 +364,11 @@
 </div>
 
 <script>
-// 硬编码数据
+// 全局变量
 var currentUser = null;
 var currentTab = 'course';
 var flashcardIndex = 0;
+var currentFilteredQuestions = [];
 
 // 记忆卡片数据 - 35张
 var flashcardsData = [
@@ -323,1405 +387,101 @@ var flashcardsData = [
   {category: "failure", question: "什么是 Abatement（削减）？", answer: "遗产不足以支付债务+所有遗赠时的处理顺序：\n\n1. 债务（优先全额支付）\n2. 未归属财产\n3. 剩余遗产\n4. 货币遗赠（最后削减）\n5. 特定物品赠与（最后削减）\n\n口诀：债→未归属→剩余→金钱→特定"},
   {category: "failure", question: "什么是 Disclaimer（弃权）？", answer: "受赠人主动拒绝接受遗赠。\n\n常见原因：高额遗产税、附带抵押、保管困难。\n\n处理：视为从未获得，遗产返回相关池。\n\n注意：必须明确表示，不能默认。"},
   {category: "failure", question: "什么是 Class Gifts 的成员确定规则？", answer: "基本原则：以遗嘱人死亡时的成员为准(closed at death)。\n\n例外(s33 Wills Act 1837)：\n• 赠与子女/直系后裔(as a class)\n• 某子女在遗嘱人死亡前死亡，但留有孙子女\n• 孙子女可代位继承(per stirpes)"},
-  {category: "failure", question: "什么是 Commorientes Rule（同时死亡）？", answer: "若无证据证明谁先死亡，推定年长者先死。\n\n用于解决互赠或共同受益人同时死亡的情况。"},
+  {category: "failure", question: "什么是 Cross-Bequests（交叉遗赠）？", answer: "两份遗嘱互为条件，一方失效时另一方也失效。\n\n示例：A立遗嘱给B一块土地，B立遗嘱给A£5000股票。\n若B先死，A仍可得到股票（不是交叉遗赠）。\n\n目的：确保双方互惠安排的完整性。"},
+  {category: "failure", question: "什么是 Election（选择权）？", answer: "当遗嘱人对他人财产做出遗赠时，受益人必须选择：\n\n1. 接受遗赠（放弃自己的财产权）\n2. 坚持自己的财产权（放弃遗赠）\n\n示例：O将A的财产遗赠给B，但O无权处置。\nB必须选择：要么接受£1000（放弃A的土地），要么坚持A土地（放弃£1000）。"},
   
-  // 商业法 - 5张
-  {category: "business", question: "英国公司类型有哪些？", answer: "1. Sole Trader 个人企业\n2. Partnership 合伙\n3. LLP 有限责任合伙\n4. Limited Company 有限公司\n5. PLC 上市公司"},
-  {category: "business", question: "董事三大义务？", answer: "1. 注意义务 (skill & care)\n2. 忠实义务 (loyalty)\n3. 促进公司成功 (s.172 CA 2006)"},
-  {category: "business", question: "普通决议 vs 特别决议？", answer: "普通决议：>50%同意\n特别决议：≥75%同意\n\n普通决议：一般事务\n特别决议：修改章程、清算等"},
-  {category: "business", question: "公司清算类型？", answer: "1. Voluntary 自愿清算\n   - Members' voluntary (可偿债)\n   - Creditors' voluntary (不可偿债)\n2. Compulsory 强制清算\n   - 法院命令"},
-  {category: "business", question: "什么是公司机会原则？", answer: "董事不得将公司机会据为己有。\n\n违反时：\n• 返还利润\n• 赔偿损失\n• 可能产生 Constructive Trust"},
+  // 商业法 (Business) - 5张
+  {category: "business", question: "公司资本维持原则的核心是什么？", answer: "保护公司资产，维护债权人利益。\n\n核心规则：\n• 禁止非法返还资本（不能用公司资产退还股东投资）\n• 减资需法院批准或债权人同意\n• 禁止认购自有股份\n• 股息只能从利润支付（可分配利润）"},
+  {category: "business", question: "董事的信义义务有哪些？", answer: "1. 勤勉义务 Duty of Care & Skill\n   - 主观标准：个人合理注意\n   - 客观标准：同类董事应具备的一般知识、技能和经验\n\n2. 忠实义务 Duty of Loyalty\n   - 避免利益冲突\n   - 不利用职位谋取私利\n   - 为公司最佳利益行事"},
+  {category: "business", question: "什么是派生诉讼（Derivative Action）？", answer: "股东代表公司对第三方（通常是董事）提起诉讼。\n\n前提条件：\n• 公司所遭受的不当行为\n• 行为人控制公司，使公司无法自行起诉\n• 股东须先向公司提出申请\n• 法院许可（ prima facie case）\n\n原则：诉讼利益归于公司。"},
+  {category: "business", question: "股份转让的限制有哪些？", answer: "私人公司（Ltd）常见限制：\n\n1. 优先购买权（Pre-emption）\n   其他股东或公司有优先购买权\n\n2. 需董事会批准\n   董事可拒绝转让，无需说明理由\n\n3. 特定对象限制\n   禁止转让给外人，只允许家族成员\n\n公开公司（PLC）通常无限制。"},
+  {category: "business", question: "什么是 Takeover 的收购要约规则？", answer: "自愿要约（Voluntary Offer）：\n• 收购方主动发起\n• 超过50%股份即可控制\n\n强制要约（Mandatory Offer）情形：\n• 收购方获得超过30%投票权\n• 从低于30%增至超过30%\n\n强制要约须按最高价向所有股东发出。"},
   
-  // 信托法 - 5张
-  {category: "trust", question: "信托三要素？", answer: "1. Certainty of intention 意图确定\n2. Certainty of subject matter 标的确信\n3. Certainty of objects 对象确定"},
-  {category: "trust", question: "Resulting Trust（剩余权益信托）？", answer: "财产转让未设信托时，法律假设转让人保留受益权。\n\n适用情况：\n• 未明确设立信托\n• 信托目的已实现但财产有剩余\n• 受益人先于信托终止"},
-  {category: "trust", question: "Constructive Trust（法定信托）？", answer: "法院因公平理由强加的信托。\n\n常见情况：\n• 董事使用公司机会\n• 共同财产纠纷\n• 非法行为受益"},
-  {category: "trust", question: "受托人职责？", answer: "1. 妥善管理信托财产\n2. 投资获得合理回报\n3. 记录和账目\n4. 不从事实业（除非授权）\n5. 不自我交易\n6. 分配给受益人"},
-  {category: "trust", question: "什么是 Trust of Land？", answer: "《1996年土地信托与受托人任命法》规范。\n\n特点：\n• 土地可作为信托财产持有\n• 受益人权利受保护\n• 受托人可出售/处置土地"},
+  // 信托法 (Trust) - 5张
+  {category: "trust", question: "Resulting Trust 与 Constructive Trust 的区别？", answer: "Resulting Trust（剩余信托）：\n• 法律推定，非当事人意图\n• 财产转移时推定转让人无意完全放弃\n• 示例：未明确用途的多余采购资金返还\n\nConstructive Trust（推定信托）：\n• 法院基于公平理念强制创设\n• 防止不当得利\n• 示例：受托人违反职责获得的利润"},
+  {category: "trust", question: "Shalimar 案的三个确信要求？", answer: "A v A [2022] UKSC 25\n\n创设有效express trust需三个确信：\n\n1. Certainty of Intention 意图确信\n   必须明确创设信托的意愿\n   'I wish to settle' = 有效\n   'I intend to settle' = 有效\n\n2. Certainty of Subject Matter 标的确信\n   必须明确信托财产范围\n   'My property' = 无效（不明确）\n\n3. Certainty of Objects 对象确信\n   必须能识别每个受益人\n   'My friends' = 无效（过于模糊）"},
+  {category: "trust", question: "什么是 Self-Declaratory Trust？", answer: "委托人自行宣告设立的信托，无需转让财产给受托人。\n\n结构：\n• 委托人 = 受托人\n• 财产已在委托人名下\n• 只需明确宣告'作为受托人持有'\n\n示例：'I hold my portfolio on trust for my children equally'\n\n无需额外转移财产。"},
+  {category: "trust", question: "Secret Trust 的两种类型？", answer: "1. 完全秘密信托（Fully Secret）\n   遗嘱中仅提及存在信托，无任何细节\n   受托人须通过 extrinsic evidence 证明\n   适用 'complying with three certainties' 标准\n\n2. 半秘密信托（Semi-Secret）\n   遗嘱中提及信托存在，但不透露受益人\n   不能用extrinsic evidence补充\n   必须遵循'Decretion原则'（Re青山）\n\n   受托人须在遗嘱人死亡前完全了解安排"},
+  {category: "trust", question: "什么是 Trust for Sale 和 Quicontract？", answer: "Trust for Sale：\n• 强制出售财产的信托\n• 收益按信托条款分配\n• 目的：确保财产可转换为可分配资金\n\nQuicontract（永久管业权）：\n• 禁止无限期持有财产的规则\n• 适用于土地（1983年废除）\n• 原则：每一代人都应有权处分财产"},
   
-  // 土地法 - 4张
-  {category: "land", question: "Freehold vs Leasehold？", answer: "Freehold（永久产权）：\n• 无限期拥有土地\n• 终身所有或自由保有\n\nLeasehold（租赁产权）：\n• 有期限的租借权\n• 通常999年/99年/数年\n• 需要支付地租"},
-  {category: "land", question: "License vs Lease？", answer: "License（许可）：\n• 无独占占有权\n• 可随时撤销\n• 通常是住宿协议\n\nLease（租约）：\n• 有独占占有权\n• 固定期限\n• 租客权利受保护"},
-  {category: "land", question: "Easement（地役权）？", answer: "一块土地对另一块土地的权利。\n\n常见类型：\n• Right of way 通行权\n• Right of light 采光权\n• Right of support 支持权\n• Party wall 共有墙"},
-  {category: "land", question: "Mortgage 抵押贷款？", answer: "借款人将财产作为债务担保。\n\n类型：\n• Legal mortgage: 法律上的抵押\n• Equitable mortgage: 衡平法抵押\n\n权利：\n• 止赎权 (foreclosure)\n• 出租权 (letting)\n• 出售权 (sale)"},
+  // 土地法 (Land) - 4张
+  {category: "land", question: "Legal Estate 与 Equitable Interest 的区别？", answer: "Legal Estate（普通法权益）：\n• 能在土地登记簿注册\n• 目前只有 fee simple（自由持有）和 leasehold（租赁持有）\n• 产权 absolute 时可注册\n\nEquitable Interest（衡平法权益）：\n• 不能直接注册为法律产权\n• 如：受益权益、Equity redemption、license\n• 受登记制度间接保护（notice）"},
+  {category: "land", question: "什么是 Overriding Interest？", page: 2, answer: "无需注册即可对抗后手的权益（Schedule 3 LCA 2002）：\n\n• 占有益（Possession）：有人实际占有土地\n• 法定easement/利润（express grant/receipt）\n• 衡平法抵押（Equitable mortgage by deposit）\n\n• 各类优先权（Schedule 3 Para 2）\n\n关键：占有益必须是 active possession（积极占有）。"},
+  {category: "land", question: "Lease 与 Licence 的关键区别？", answer: "Lease（租赁）特征：\n• 独占占有权 exclusive possession\n• 可注册为legal estate\n• 适用 landlord-tenant 规则\n• 终止需 notice\n\nLicence（许可）特征：\n• 无独占占有权\n• 不能注册\n• 通常不可转让\n• 可随时终止（取决于类型）\n\n\n测试：Brill v Wellings [2016] - 实质是独占占有还是仅允许使用？"},
+  {category: "land", question: "什么是Proprietary Estoppel（产权禁止反言）？", answer: "当某人基于另一人的陈述/行为合理信赖并遭受损失时适用。\n\n三要素（Thorner v Major [2009]）：\n1. Assurance 陈述/承诺\n2. Reliance 合理信赖\n3. Detriment 因信赖而遭受损失\n\n救济：法院可判令归还财产或给予Equitable compensation。\n\n典型案例：Gillespie v McGowan - 子女基于父母承诺修缮房屋后被逐。"},
   
-  // 侵权法 - 4张
-  {category: "tort", question: "Negligence（过失）三要素？", answer: "1. Duty of care 注意义务\n2. Breach 违反义务\n3. Causation 因果关系\n\n还需证明：\n• Remoteness 间接损失可预见"},
-  {category: "tort", question: "Donoghue v Stevenson 案？", answer: "1932年经典案例。\n\n确立：\n• 邻居原则 (neighbor principle)\n• 制造商对最终消费者有注意义务\n• 即使无合同关系也可追责\n\n影响：现代侵权法基础"},
-  {category: "tort", question: "Res Ipsa Loquitur？", answer: "事实自证原则。\n\n适用条件：\n• 事故本身证明过失\n• 被告完全控制物品\n• 无其他合理解释\n\n示例：\n• 手术遗留纱布\n• 飞机坠毁\n• 建筑物倒塌"},
-  {category: "tort", question: "严格责任 Strict Liability？", answer: "无需证明过失的责任。\n\n适用：\n• 危险动物\n• 异常危险活动(Rylands v Fletcher)\n• 产品责任\n\n特点：\n• 被告可抗辩\n• 不可抗力/原告过错"},
-  
-  // 合同法 - 4张
-  {category: "contract", question: "合同三要素？", answer: "1. Offer 要约\n2. Acceptance 承诺\n3. Consideration 对价\n\n还需：\n• 意图建立法律关系\n• 合法目的"},
-  {category: "contract", question: "什么是对价 Consideration？", answer: "有价值的交换。\n\n规则：\n• 必须有对价\n• 过去的对价无效\n• 必须有实际价值\n\n示例：\n• A给钱，B提供服务\n• 双方互相承诺"},
-  {category: "contract", question: "什么是有效要约 Offer？", answer: "明确发盘，表示愿意受约束。\n\nvs 招标/广告：\n• 广告通常是要约邀请\n• 招标通常是要约邀请\n• 明确发盘是要约"},
-  {category: "contract", question: "违约救济 Remedies？", answer: "1. Damages 损害赔偿\n   - 期望损失\n   - 信赖损失\n2. Specific performance 具体履行\n   - 金钱赔偿不足时\n   - 独一无二的物品\n3. Injunction 禁令\n   - 禁止某行为"}
-];
-
-// 题目数据
-var questionsData = [
-  // ============ 合同法 Contract Law ============
-  {id: 1, category: "contract", question: "以下哪项构成有效对价？", options: ["A. 过去的对价 (Past Consideration)", "B. 现有的对价 (Present Consideration)", "C. 虚假的对价 (False Consideration)", "D. 不可能的对价 (Impossible Consideration)"], correct: 1, analysis: "【答案】B\n\n【分析】有效对价必须是现在的对价(Present Consideration)。过去的对价(Past Consideration)无效，因为它在要约做出之前已经发生。"},
-  {id: 2, category: "contract", question: "Donoghue v Stevenson (1932) 确立了什么原则？", options: ["A. 制造商无责任", "B. 邻居原则 (Neighbour Principle)", "C. 严格责任", "D. 合同责任"], correct: 1, analysis: "【答案】B\n\n【分析】Donoghue v Stevenson 确立了侵权法中的"邻居原则"(Neighbour Principle)：一个人应当合理注意避免可能伤害邻人的事情。这是现代过失侵权法的基石。"},
-  {id: 3, category: "contract", question: "Resulting Trust 何时适用？", options: ["A. 明确设立信托时", "B. 财产转让未明确目的时 (Implied Trust)", "C. 受益人要求时", "D. 法院判决时"], correct: 1, analysis: "【答案】B\n\n【分析】Resulting Trust（剩余权益信托）是推定信托，当财产转让但未明确设立信托目的时适用，财产复归转让人或用于转让人指定目的。"},
-  {id: 4, category: "contract", question: "Lease 和 License 的主要区别？", options: ["A. 租金金额", "B. 独占占有权 (Exclusive Possession)", "C. 租约期限", "D. 建筑类型"], correct: 1, analysis: "【答案】B\n\n【分析】Lease（租赁）赋予承租人独占占有权(Exclusive Possession)，而License（许可）仅允许使用，不享有独占占有权。这是两者最核心的法律区别。"},
-  {id: 5, category: "contract", question: "遗嘱需要满足什么形式要求？", options: ["A. 口头即可", "B. 书面+签名+见证人 (Writing + Signature + Witness)", "C. 仅签名", "D. 仅书面"], correct: 1, analysis: "【答案】B\n\n【分析】根据英国《遗嘱法》，有效遗嘱必须满足形式要求：书面形式、签名、两名见证人见证(18岁以上)。"},
-  {id: 6, category: "contract", question: "公司董事促进公司成功的义务来自？", options: ["A. 普通法", "B. s.172 CA 2006", "C. 合同条款", "D. 判例法"], correct: 1, analysis: "【答案】B\n\n【分析】英国《2006年公司法》第172条明确规定董事有义务促进公司成功( Promote the success of the company)，考虑股东长期利益。"},
-  {id: 7, category: "contract", question: "以下哪种情况构成要约(Offer)？", options: ["A. 广告 (Advertisement)", "B. 招标 (Invitation to Treat)", "C. 明确发盘 (Clear Offer)", "D. 询价 (Request for Information)"], correct: 2, analysis: "【答案】C\n\n【分析】广告和招标通常被视为要约邀请(Invitation to Treat)，而非要约。明确发盘构成要约，承诺后即形成合同。"},
-  {id: 8, category: "contract", question: "Res Ipsa Loquitur 适用条件？", options: ["A. 原告有过错", "B. 事故本身证明过失 (The thing speaks for itself)", "C. 被告已道歉", "D. 有证人"], correct: 1, analysis: "【答案】B\n\n【分析】Res Ipsa Loquitur（事实自证原则）适用于：事故本身足以证明被告存在过失，且该事故通常不会发生除非有人过失。"},
-  {id: 9, category: "contract", question: "Ademption 只适用于哪种遗赠？", options: ["A. General Legacy", "B. Residuary Legacy", "C. Specific Legacy", "D. Pecuniary Legacy"], correct: 2, analysis: "【答案】C\n\n【分析】Ademption（遗赠失效）仅适用于特定遗赠(Specific Legacy)。如果遗赠的特定物品在遗嘱人去世时不存在，遗赠失效。"},
-  {id: 10, category: "contract", question: "Constructive Trust 产生原因？", options: ["A. 当事人明确设立", "B. 法院因公平强加 (Court-imposed)", "C. 受益人要求", "D. 遗嘱指定"], correct: 1, analysis: "【答案】B\n\n【分析】Constructive Trust（推定信托）是法院基于公平原则强加的信托，非依当事人意图设立，用于防止不公正 Enrichment。"},
-  {id: 11, category: "contract", question: "对价(Consideration)的必要条件是？", options: ["A. 必须来自第三人", "B. 必须是真实的 (Real)", "C. 必须书面形式", "D. 必须是金钱"], correct: 1, analysis: "【答案】B\n\n【分析】对价必须是真实的(Real)，即必须是合法的、有价值的。可以是行为、允诺或克制，不必须是金钱。"},
-  {id: 12, category: "contract", question: "以下哪项属于无效合同？", options: ["A. 玩笑合同", "B. 戏谑合同 (Joke Contract)", "C. 书面合同", "D. 履行合同"], correct: 1, analysis: "【答案】B\n\n【分析】戏谑合同(Joke Contract)因缺乏真正的缔约意图(Intent to create legal relations)而无效。"},
-  {id: 13, category: "contract", question: "要约可以在什么情况下终止？", options: ["A. 受要约人死亡", "B. 要约人撤回", "C. 受要约人拒绝", "D. 以上都是"], correct: 3, analysis: "【答案】D\n\n【分析】要约可在以下情况终止：被撤回、要约人死亡、受要约人拒绝、要约过期或条件成就。"},
-  {id: 14, category: "contract", question: "承诺(Acceptance)必须满足什么条件？", options: ["A. 书面形式", "B. 与要约完全一致 (Mirror Image Rule)", "C. 口头同意", "D. 支付定金"], correct: 1, analysis: "【答案】B\n\n【分析】承诺必须与要约完全一致(Mirror Image Rule)。如果承诺附加条件，视为反要约。"},
-  {id: 15, category: "contract", question: "英国合同法中，违约金条款( Penalty Clause) 效力？", options: ["A. 永远有效", "B. 超过实际损失无效", "C. 由法院自由裁量", "D. 取决于金额大小"], correct: 1, analysis: "【答案】B\n\n【分析】违约金条款如果本质是惩罚(Penalty)而非预估计赔偿金(Liquidated Damages)，超过实际损失的部分无效。"},
-  {id: 16, category: "contract", question: "第三方权利法案1999 (Contracts Act) 赋予第三方什么权利？", options: ["A. 起诉合同双方", "B. 强制执行合同条款 (Enforce Contract Terms)", "C. 解除合同", "D. 修改合同"], correct: 1, analysis: "【答案】B\n\n【分析】第三方权利法案允许第三方在符合条件时强制执行合同条款，即使非合同当事人。"},
-  {id: 17, category: "contract", question: "合同的实质性违反(Material Breach)会导致？", options: ["A. 合同继续有效", "B. 另一方可终止合同", "C. 无任何后果", "D. 仅能要求赔偿"], correct: 1, analysis: "【答案】B\n\n【分析】实质性违反允许非违约方终止合同(Repudiate)并要求赔偿。非实质性违反只能要求赔偿。"},
-  {id: 18, category: "contract", question: "默示条款(Implied Terms)在消费者合同中主要来自？", options: ["A. 当事人明示", "B. 贸易惯例", "C. 法定要求 (Statutory)", "D. 习惯法"], correct: 2, analysis: "【答案】C\n\n【分析】消费者合同中的默示条款主要来自法定要求(如《消费者权利法2015》)，确保基本质量和服务标准。"},
-  {id: 19, category: "contract", question: "不可抗力(Force Majeure)条款的目的是？", options: ["A. 惩罚违约方", "B. 免除特定情况下的责任", "C. 延长合同期限", "D. 增加违约金"], correct: 1, analysis: "【答案】B\n\n【分析】不可抗力条款规定在特定事件(如天灾、战争)发生时，一方可以免除或减轻违约责任。"},
-  {id: 20, category: "contract", question: "代理关系(Agency)中，代理人的基本义务是？", options: ["A. 最大化本人利润", "B. 忠实义务 (Fiduciary Duty)", "C. 无限责任", "D. 亲自履行"], correct: 1, analysis: "【答案】B\n\n【分析】代理人承担忠实义务(Fiduciary Duty)，包括忠实于本人、避免利益冲突、不得谋取私利。"},
-
-  // ============ 侵权法 Tort Law ============
-  {id: 21, category: "tort", question: "过失侵权(Negligence)的构成要件？", options: ["A. 注意义务+违反+损害", "B. 故意+行为+结果", "C. 严格责任", "D. 绝对责任"], correct: 0, analysis: "【答案】A\n\n【分析】过失侵权构成三要素：Duty of Care(注意义务)、Breach(违反)、Damage(损害)。三者缺一不可。"},
-  {id: 22, category: "tort", question: "Donoghue v Stevenson 案中，snail 是什么？", options: ["A. 证据", "B. 侵权行为的载体 (The Ginger Beer)", "C. 证人", "D. 被告"], correct: 1, analysis: "【答案】B\n\n【分析】案件涉及在姜啤酒中发现蜗牛，原告因饮用后生病起诉制造商。"},
-  {id: 23, category: "tort", question: "Caparo v Dickman 案确立的过失测试标准是？", options: ["A. 合理预见", "B. 三步测试 (Foreseeability + Proximity + Fairness)", "C. 因果关系", "D. 损失程度"], correct: 1, analysis: "【答案】B\n\n【分析】Caparo案确立过失三要素测试：合理预见(Foreseeability)、近因(Proximity)、公平正义(Fairness)。"},
-  {id: 24, category: "tort", question: "经济损失(Economic Loss)在过失案中能否索赔？", options: ["A. 永远可以", "B. 永远不可以", "C. 有特殊情况时可以 (Special Relationship)", "D. 仅限合同违约"], correct: 2, analysis: "【答案】C\n\n【分析】纯经济损失一般不能索赔，但存在特殊关系(如专业建议)时可索赔。"},
-  {id: 25, category: "tort", question: "雇主替代责任(Vicarious Liability)的范围？", options: ["A. 仅限工作时间内", "B. 雇员在授权范围内 (Within Course of Employment)", "C. 仅限故意行为", "D. 仅限过失行为"], correct: 1, analysis: "【答案】B\n\n【分析】雇主对雇员在授权范围内(Within Course of Employment)的行为承担替代责任，即使该行为超出授权。"},
-  {id: 26, category: "tort", question: "共同侵权(Joint Tortfeasors)的责任承担方式？", options: ["A. 各付其责", "B. 连带责任 (Joint and Several Liability)", "C. 按份责任", "D. 不承担责任"], correct: 1, analysis: "【答案】B\n\n【分析】共同侵权人承担连带责任，受害人可向任一或全部责任人请求全部赔偿。"},
-  {id: 27, category: "tort", question: "妨害性侵扰(Nuisance)的救济方式包括？", options: ["A. 仅赔偿金", "B. 禁令和赔偿 (Injunction + Damages)", "C. 仅禁令", "D. 惩罚性赔偿"], correct: 1, analysis: "【答案】B\n\n【分析】妨害性侵扰的救济包括禁令(Injunction)禁止继续侵权，以及损害赔偿(Damages)补偿损失。"},
-  {id: 28, category: "tort", question: "产品责任(Product Liability)中，严格责任适用于？", options: ["A. 所有产品", "B. 缺陷产品 (Defective Products)", "C. 仅食品", "D. 仅药品"], correct: 1, analysis: "【答案】B\n\n【分析】产品责任中，对缺陷产品(Defective Products)适用严格责任，消费者无需证明制造商过失。"},
-  {id: 29, category: "tort", question: "非法侵入(Trespass)与妨害(Nuisance)的主要区别？", options: ["A. 无区别", "B. 侵入是实际侵犯，妨害是持续性干扰", "C. 侵入仅针对土地", "D. 妨害仅针对动产"], correct: 1, analysis: "【答案】B\n\n【分析】Trespass是实际侵犯人身或财产，Nuisance是对土地使用权的持续性干扰。两者性质不同。"},
-  {id: 30, category: "tort", question: "恶意检控(Malicious Prosecution)的构成要件？", options: ["A. 仅需起诉", "B. 无合理理由起诉+缺乏适当动机+结果有利原告", "C. 仅需动机不良", "D. 仅需无合理理由"], correct: 1, analysis: "【答案】B\n\n【分析】恶意检控需证明：无合理理由起诉(Want of reasonable cause)、缺乏适当动机(Lack of proper motive)、结果有利原告(Termination in favour of plaintiff)。"},
-  
-  // ============ 信托法 Trust Law ============
-  {id: 31, category: "trust", question: "有效信托的三要素(Three Certainties)？", options: ["A. 意图+标的+对象 (Intention + Subject Matter + Objects)", "B. 金钱+财产+时间", "C. 合同+受益人+对价", "D. 书面+签名+见证人"], correct: 0, analysis: "【答案】A\n\n【分析】信托三要素：意图(Intention)确定、标的(Subject Matter)确定、受益人(Objects)确定。"},
-  {id: 32, category: "trust", question: "Express Trust 的设立方式？", options: ["A. 仅能书面", "B. 书面或口头 (depending on type)", "C. 仅能信托宣言", "D. 仅能转让财产"], correct: 1, analysis: "【答案】B\n\n【分析】明示信托可依设立方式分为：财产转让型(Transfer)或信托宣言(Declaration)，形式因类型而异。"},
-  {id: 33, category: "trust", question: "Resulting Trust 的推定性质？", options: ["A. 明示信托", "B. 推定信托 (Presumed)", "C. 法定信托", "D. 强制信托"], correct: 1, analysis: "【答案】B\n\n【分析】Resulting Trust是推定信托，法院推定财产转让未明确目的时，转让人保留剩余权益。"},
-  {id: 34, category: "trust", question: "Constructive Trust 通常因什么产生？", options: ["A. 当事人明确约定", "B. 违反忠实义务 (Breach of Fiduciary Duty)", "C. 遗嘱指定", "D. 法定要求"], correct: 1, analysis: "【答案】B\n\n【分析】推定信托通常因违反忠实义务(Breach of Fiduciary Duty)产生，如受托人谋取私利、代理人自利等。"},
-  {id: 35, category: "trust", question: "受托人(Trustee)的基本职责？", options: ["A. 最大化投资回报", "B. 忠实义务+注意义务 (Duty of Loyalty + Skill and Care)", "C. 任意处置财产", "D. 为自己利益管理"], correct: 1, analysis: "【答案】B\n\n【分析】受托人承担忠实义务(Duty of Loyalty)和注意义务(Skill and Care)，需为受益人最佳利益管理信托财产。"},
-  {id: 36, category: "trust", question: "信托财产的独立性体现在？", options: ["A. 可与受托人财产混合", "B. 不得与受托人个人财产混合 (Separate Fund)", "C. 可用于受托人债务", "D. 不受债权人追索"], correct: 1, analysis: "【答案】B\n\n【分析】信托财产必须与受托人个人财产分开管理(Separate Fund)，不得混同，以保护受益人权益。"},
-  {id: 37, category: "trust", question: "信托变更(Variation of Trust)需要谁同意？", options: ["A. 仅受托人", "B. 受益人全体或法院批准", "C. 仅法院", "D. 仅信托宣言指定"], correct: 1, analysis: "【答案】B\n\n【分析】信托变更通常需要全体受益人同意，或依据《1958年信托变更法》经法院批准。"},
-  {id: 38, category: "trust", question: "Breach of Trust 的救济方式包括？", options: ["A. 仅赔偿", "B. 赔偿+追回财产+追溯收益", "C. 仅返还财产", "D. 无救济"], correct: 1, analysis: "【答案】B\n\n【分析】违反信托的救济包括：赔偿损失、追回信托财产、追溯收益、任命新受托人等。"},
-  {id: 39, category: "trust", question: "慈善信托(Charitable Trust)与非慈善信托的主要区别？", options: ["A. 无区别", "B. 慈善信托需符合慈善目的+公益性质", "C. 仅名称不同", "D. 税收待遇相同"], correct: 1, analysis: "【答案】B\n\n【分析】慈善信托必须具有慈善目的(Charitable Purpose)和公益性质(Public Benefit)，享受税收优惠。"},
-  {id: 40, category: "trust", question: "信托管理(Trust Administration)的基本原则？", options: ["A. 追求高风险高回报", "B. 审慎投资人规则 (Prudent Investor Rule)", "C. 自由裁量", "D. 追随市场趋势"], correct: 1, analysis: "【答案】B\n\n【分析】受托人须遵守审慎投资人规则(Prudent Investor Rule)，分散投资、审慎管理。"},
-
-  // ============ 土地法 Land Law ============
-  {id: 41, category: "land", question: "Freehold 地产权的特点？", options: ["A. 有期限", "B. 永久产权 (Indefinite Duration)", "C. 仅使用权", "D. 租赁权"], correct: 1, analysis: "【答案】B\n\n【分析】Freehold(永久产权)是无期限的地产权，业主拥有土地绝对所有权。"},
-  {id: 42, category: "land", question: "Leasehold 地产权的特点？", options: ["A. 永久", "B. 有期限 (Fixed Term)", "C. 无期限", "D. 可转让所有权"], correct: 1, analysis: "【答案】B\n\n【分析】Leasehold(租赁产权)有固定期限，承租人在租期内享有使用权，期限届满后返还业主。"},
-  {id: 43, category: "land", question: "Easement (地役权) 的典型例子？", options: ["A. 租赁", "B. 通行权 (Right of Way)", "C. 抵押", "D. 许可"], correct: 1, analysis: "【答案】B\n\n【分析】地役权(Easement)的典型例子包括通行权(Right of Way)、采光权等，允許他人在自己土地上行使特定权利。"},
-  {id: 44, category: "land", question: "Mortgage (抵押)的法律性质？", options: ["A. 买卖", "B. 债务担保 (Security for Debt)", "C. 租赁", "D. 赠与"], correct: 1, analysis: "【答案】B\n\n【分析】Mortgage是债务担保方式，借款人将财产抵押给贷款人作为债务担保，违约时贷款人可行使抵押权。"},
-  {id: 45, category: "land", question: "Licence (许可)与Lease的主要区别？", options: ["A. 期限不同", "B. 无独占占有权 (No Exclusive Possession)", "C. 租金不同", "D. 形式不同"], correct: 1, analysis: "【答案】B\n\n【分析】Licence不授予独占占有权，许可人可随时终止；而Lease授予独占占有权，受法律保护。"},
-  {id: 46, category: "land", question: "Covenant (契约)对土地受让人的效力？", options: ["A. 永远有效", "B. 取决于是否Running with Land", "C. 仅对原当事人有效", "D. 无效"], correct: 1, analysis: "【答案】B\n\n【分析】土地契约是否约束受让人取决于是否"随土地"(Running with Land)，即是否属于利益或负担。"},
-  {id: 47, category: "land", question: "Adverse Possession (逆权占有)的要件？", options: ["A. 公开占有", "B. 实际占有+排他性+未经许可+持续期限", "C. 仅需使用", "D. 只需支付租金"], correct: 1, analysis: "【答案】B\n\n【分析】逆权占有需满足：实际占有、排除真正所有权人、未经许可、法定持续期限(通常10年)。"},
-  {id: 48, category: "land", question: "Land Registration Act 2002 的主要改革？", options: ["A. 废除登记", "B. 全面电子登记 (Electronic Register)", "C. 仅针对新房", "D. 维持纸质登记"], correct: 1, analysis: "【答案】B\n\n【分析】2002年土地登记法引入全面电子登记系统(Electronic Register)，提高效率并减少欺诈。"},
-  {id: 49, category: "land", question: "Fixture (固定附着物)的法律地位？", options: ["A. 永远是动产", "B. 视为土地一部分 (Part of Land)", "C. 独立于土地", "D. 由当事人约定"], correct: 1, analysis: "【答案】B\n\n【分析】Fixture(固定附着物)一旦附着于土地，即视为土地的一部分，随土地所有权转移。"},
-  {id: 50, category: "land", question: "Priority of Mortgages 的确定规则？", options: ["A. 同时设立按比例", "B. 先登记优先 (First in Time)", "C. 金额大的优先", "D. 由借款人决定"], correct: 1, analysis: "【答案】B\n\n【分析】抵押权优先顺序遵循"先登记优先"(First in Time)原则，先设立并登记的抵押权优先于后设立的。"},
-  
-  // ============ 遗嘱法 Wills Law ============
-  {id: 51, category: "wills", question: "有效遗嘱的形式要求？", options: ["A. 口头", "B. 书面+签名+见证 (Writing + Signature + Witness)", "C. 仅书面", "D. 仅签名"], correct: 1, analysis: "【答案】B\n\n【分析】有效遗嘱需满足：书面形式、本人签名、两名见证人(18岁以上)在场见证。"},
-  {id: 52, category: "wills", question: "遗嘱人可自由处分的财产比例？", options: ["A. 100%", "B. 全部 (Testator Freedom)", "C. 受保留份额限制", "D. 50%"], correct: 1, analysis: "【答案】B\n\n【分析】遗嘱人原则上可自由处分全部财产，但需考虑家属 provision for family and dependents。"},
-  {id: 53, category: "wills", question: "Ademption 的发生条件？", options: ["A. 受益人先去世", "B. 遗赠物不存在 (Gift No Longer Exists)", "C. 遗嘱人破产", "D. 遗赠物增值"], correct: 1, analysis: "【答案】B\n\n【分析】Ademption发生在遗赠的特定物品在遗嘱人去世时已不存在，导致遗赠失效。"},
-  {id: 54, category: "wills", question: "Lapse 的发生条件？", options: ["A. 遗赠物增值", "B. 受益人先于遗嘱人死亡", "C. 遗嘱撤销", "D. 财产不足"], correct: 1, analysis: "【答案】B\n\n【分析】Lapse(失效)发生在受益人先于遗嘱人死亡，遗赠无法执行。"},
-  {id: 55, category: "wills", question: "Class Gift 的特点？", options: ["A. 特定人", "B. 群体 (Group of Persons)", "C. 公益组织", "D. 不确定"], correct: 1, analysis: "【答案】B\n\n【分析】Class Gift是给某一群体全体成员的遗赠，如"给我的孩子们"，存活者按股分享。"},
-  {id: 56, category: "wills", question: "Specific Legacy 与 General Legacy 的区别？", options: ["A. 无区别", "B. 特定物品 vs 金额/数量", "C. 效力不同", "D. 税务不同"], correct: 1, analysis: "【答案】B\n\n【分析】Specific Legacy是特定物品遗赠，General Legacy是金钱或数量遗赠。Ademption仅适用于前者。"},
-  {id: 57, category: "wills", question: "Residuary Legacy 的效力？", options: ["A. 最先执行", "B. 最后执行 (After Specific Legacies)", "C. 同时执行", "D. 不执行"], correct: 1, analysis: "【答案】B\n\n【分析】剩余遗产遗赠在清偿所有特定遗赠和债务后执行，分配剩余财产。"},
-  {id: 58, category: "wills", question: "Executor (遗嘱执行人)的职责？", options: ["A. 仅保管文件", "B. 管理遗产+清偿债务+分配财产", "C. 仅分配财产", "D. 无需介入"], correct: 1, analysis: "【答案】B\n\n【分析】遗嘱执行人职责：管理遗产、申请遗嘱认证、清偿债务、分配遗产给受益人。"},
-  {id: 59, category: "wills", question: "Probate (遗嘱认证)的作用？", options: ["A. 确认遗嘱效力", "B. 授予执行权 (Grant of Representation)", "C. 税务征收", "D. 登记备案"], correct: 1, analysis: "【答案】B\n\n【分析】遗嘱认证是法院确认遗嘱效力并授予执行权(Grant of Probate)的程序。"},
-  {id: 60, category: "wills", question: "Intestacy (无遗嘱死亡)时财产如何分配？", options: ["A. 国有", "B. 按法定顺序 (Statutory Distribution)", "C. 给朋友", "D. 法院自由裁量"], correct: 1, analysis: "【答案】B\n\n【分析】无遗嘱死亡时，财产按法定顺序(Intestacy Rules)分配给配偶、子女、父母等亲属。"},
-
-  // ============ 商业公司法 Business & Company Law ============
-  {id: 61, category: "business", question: "英国公司类型中，有限责任是指？", options: ["A. 股东责任无限", "B. 股东仅以出资额为限 (Limited Liability)", "C. 公司责任无限", "D. 董事责任无限"], correct: 1, analysis: "【答案】B\n\n【分析】有限公司的股东责任以其出资额为限(Limited Liability)，个人资产通常受保护。"},
-  {id: 62, category: "business", question: "董事的基本义务来源于？", options: ["A. 普通法", "B. Companies Act 2006 s.172", "C. 判例法", "D. 合同"], correct: 1, analysis: "【答案】B\n\n【分析】《2006年公司法》第172条明确规定董事义务：促进公司成功、考虑雇员/供应商/客户/社区利益等。"},
-  {id: 63, category: "business", question: "董事利益冲突(Conflict of Interest)的要求？", options: ["A. 无需披露", "B. 必须披露+经批准 (Disclose + Authorise)", "C. 自动禁止", "D. 仅需回避"], correct: 1, analysis: "【答案】B\n\n【分析】董事存在利益冲突时，必须向董事会披露(B disclose)并获得批准(Authorise)，否则可能构成违反义务。"},
-  {id: 64, category: "business", question: "股东大会普通决议的通过门槛？", options: ["A. 100%", "B. 简单多数 (50%+1)", "C. 75%", "D. 30%"], correct: 1, analysis: "【答案】B\n\n【分析】普通决议(Ordinary Resolution)需简单多数(Simple Majority, 50%+1)通过。"},
-  {id: 65, category: "business", question: "特别决议(Special Resolution)的通过门槛？", options: ["A. 50%", "B. 75% (75% of Votes)", "C. 90%", "D. 100%"], correct: 1, analysis: "【答案】B\n\n【分析】特别决议需75%以上投票权(Special Resolution)通过，用于修改章程、清算等重大事项。"},
-  {id: 66, category: "business", question: "公司秘书(Company Secretary)的任职资格？", options: ["A. 无要求", "B. 需具备相应知识和经验", "C. 必须是律师", "D. 必须是会计"], correct: 1, analysis: "【答案】B\n\n【分析】公司秘书需具备相应知识和经验(S.273 CA 2006)，负责合规和行政事务。"},
-  {id: 67, category: "business", question: "公司资本维持(Capital Maintenance)的原则？", options: ["A. 可自由分配", "B. 资本不得随意返还股东 (Protection of Capital)", "C. 无限制", "D. 仅限制分配"], correct: 1, analysis: "【答案】B\n\n【分析】资本维持原则禁止资本不经合法程序返还股东，保护债权人和股东利益。"},
-  {id: 68, category: "business", question: "派生诉讼(Derivative Action)的原告资格？", options: ["A. 任何股东", "B. 股东+法院许可 (Member + Court Leave)", "C. 仅董事", "D. 仅债权人"], correct: 1, analysis: "【答案】B\n\n【分析】派生诉讼需股东提起并获得法院许可(Court Leave)，代表公司追究董事责任。"},
-  {id: 69, category: "business", question: "公司清算(Winding Up)的原因包括？", options: ["A. 仅自愿", "B. 自愿或强制 (Voluntary or Compulsory)", "C. 仅法院命令", "D. 无原因"], correct: 1, analysis: "【答案】B\n\n【分析】公司清算分为自愿清算(股东决议)和强制清算(法院命令)，原因包括无力偿债等。"},
-  {id: 70, category: "business", question: "董事短线交易(Short-term Trading)的禁止？", options: ["A. 无禁止", "B. 禁止在股价波动前后交易", "C. 禁止董事交易", "D. 仅禁止期权"], correct: 1, analysis: "【答案】B\n\n【分析】董事在股价敏感期前后(Inside Information)交易构成内幕交易(Market Abuse)，被禁止。"},
-
-  // ============ 刑法 Criminal Law ============
-  {id: 71, category: "criminal", question: "犯罪意图(Mens Rea)的类型包括？", options: ["A. 仅故意", "B. 故意+鲁莽+过失 (Intent + Recklessness + Negligence)", "C. 仅过失", "D. 无需意图"], correct: 1, analysis: "【答案】B\n\n【分析】犯罪意图(Mens Rea)包括三种形态：故意(Intent)、鲁莽(Recklessness)、过失(Negligence)。不同犯罪要求不同意图程度。"},
-  {id: 72, category: "criminal", question: "Actus Reus 的含义是？", options: ["A. 犯罪意图", "B. 犯罪行为 (Guilty Act)", "C. 犯罪动机", "D. 犯罪结果"], correct: 1, analysis: "【答案】B\n\n【分析】Actus Reus(犯罪行为)是犯罪的客观要件，包括行为、不行为或结果。与Mens Rea(主观意图)共同构成犯罪。"},
-  {id: 73, category: "criminal", question: "共同犯罪(Joint Enterprise)的主要法律原则？", options: ["A. 仅主犯负责", "B. 所有参与者共同负责 (Shared Intent)", "C. 仅实行犯负责", "D. 无需刑事责任"], correct: 1, analysis: "【答案】B\n\n【分析】共同犯罪(Joint Enterprise)中，所有参与者因共同意图(Shared Intent)对犯罪后果共同承担责任。"},
-  {id: 74, category: "criminal", question: "未遂犯罪(Attempt)的成立条件？", options: ["A. 仅需意图", "B. 意图+超过准备阶段 (Intent + Beyond Preparation)", "C. 完成犯罪", "D. 任何行为"], correct: 1, analysis: "【答案】B\n\n【分析】未遂犯罪需证明：犯罪意图+超过准备阶段(Beyond Preparation)+实施构成犯罪的行为。"},
-  {id: 75, category: "criminal", question: "正当防卫(Self-defence)的限度？", options: ["A. 无限度", "B. 合理必要程度 (Reasonable Force)", "C. 被动防御", "D. 需先报警"], correct: 1, analysis: "【答案】B\n\n【分析】正当防卫使用合理必要的武力(Reasonable Force)，不得超过必要限度。"},
-  {id: 76, category: "criminal", question: "紧急避险(necessity)的法律效力？", options: ["A. 永远免责", "B. 有限辩护理由 (Limited Defence)", "C. 不构成辩护", "D. 减轻责任"], correct: 1, analysis: "【答案】B\n\n【分析】紧急避险(Necessity)是有限辩护理由，仅在特定情况下可作为辩护，需满足严格条件。"},
-  {id: 77, category: "criminal", question: "刑事责任年龄(年龄多大承担刑事责任)？", options: ["A. 10岁以下", "B. 10岁以上 (10+ years)", "C. 14岁以上", "D. 18岁以上"], correct: 1, analysis: "【答案】B\n\n【分析】英国刑法规定10岁以下儿童绝对免责；10-14岁需证明有犯意(Doli Incapax)才能定罪。"},
-  {id: 78, category: "criminal", question: "精神失常(Insanity)作为辩护的法律标准？", options: ["A. 精神紧张", "B. 法律认知缺陷 (Disease of the Mind)", "C. 情绪激动", "D. 压力过大"], correct: 1, analysis: "【答案】B\n\n【分析】精神失常辩护需证明：精神疾病导致无法认知行为性质或违法性(M'Naghten Rules)。"},
-  {id: 79, category: "criminal", question: "减轻情节(Mitigating Factors)的作用？", options: ["A. 免除责任", "B. 从轻处罚 (Lighter Sentence)", "C. 无作用", "D. 加重责任"], correct: 1, analysis: "【答案】B\n\n【分析】减轻情节用于从轻处罚(Mitigating)，如自首、悔罪、犯罪时特殊情况等。"},
-  {id: 80, category: "criminal", question: "盗窃罪(Theft)的构成要件？", options: ["A. 仅需占有", "B. 永久性剥夺+ Dishonest + Intent to Steal", "C. 仅需使用", "D. 借用"], correct: 1, analysis: "【答案】B\n\n【分析】盗窃罪需满足：永久性剥夺财产(Appropriate)+欺诈故意(Dishonest)+永久剥夺意图(Defraud)。"},
-  {id: 81, category: "criminal", question: "欺诈罪(Fraud)的核心要素？", options: ["A. 仅需虚假陈述", "B. 虚假陈述+导致损失+故意", "C. 仅过失", "D. 无需故意"], correct: 1, analysis: "【答案】B\n\n【分析】欺诈需证明：虚假陈述(Make False Representation)、故意( intent to make gain or cause loss)、导致损失。"},
-  {id: 82, category: "criminal", question: "人身攻击(Assault)和殴打(Battery)的区别？", options: ["A. 无区别", "B. Assault是威胁，Battery是实际接触", "C. 仅Assault需意图", "D. 仅Battery有罪"], correct: 1, analysis: "【答案】B\n\n【分析】Assault(攻击)是威胁造成立即伤害；Battery(殴打)是实际非法接触他人身体。两者可独立成罪。"},
-  {id: 83, category: "criminal", question: "谋杀罪(Murder)的构成要件？", options: ["A. 仅过失", "B. 故意杀人或致人死亡 (Intent to Kill or Cause GBH)", "C. 仅伤害", "D. 无意图"], correct: 1, analysis: "【答案】B\n\n【分析】谋杀罪需证明：故意杀人或造成严重身体伤害(GBH)的意图+导致他人死亡。"},
-  {id: 84, category: "criminal", question: "误杀(Manslaughter)的类型包括？", options: ["A. 仅过失", "B. 自愿误杀+非自愿误杀 (Voluntary + Involuntary)", "C. 仅故意", "D. 无类型"], correct: 1, analysis: "【答案】B\n\n【分析】误杀分为自愿误杀(Voluntary，如一时冲动)和非自愿误杀(Involuntary，如过失)。"},
-  {id: 85, category: "criminal", question: "共谋(Conspiracy)的法律地位？", options: ["A. 需实际犯罪", "B. 独立犯罪 (Separate Crime)", "C. 仅道德问题", "D. 无责任"], correct: 1, analysis: "【答案】B\n\n【分析】共谋是独立犯罪(Statutory Conspiracy)，即使未实际实施犯罪，协议本身即构成犯罪。"},
-  {id: 86, category: "criminal", question: "藐视法庭(Contempt of Court)的形式？", options: ["A. 仅书面", "B. 民事+刑事 (Civil + Criminal)", "C. 仅口头", "D. 无形式"], correct: 1, analysis: "【答案】B\n\n【分析】藐视法庭分为民事藐视(不服从法院命令)和刑事藐视(干扰司法程序)。"},
-  {id: 87, category: "criminal", question: "洗钱(Money Laundering)的阶段包括？", options: ["A. 仅一个阶段", "B. 放置+分层+整合 (Placement + Layering + Integration)", "C. 仅整合", "D. 无阶段"], correct: 1, analysis: "【答案】B\n\n【分析】洗钱三阶段：放置(Placement)→分层(Layering)→整合(Integration)，每阶段均可独立成罪。"},
-  {id: 88, category: "criminal", question: "恐怖主义犯罪(Terrorism)的核心要素？", options: ["A. 仅暴力", "B. 政治目的+暴力或恐吓 (Political Purpose + Violence/Intimidation)", "C. 仅政治目的", "D. 无定义"], correct: 1, analysis: "【答案】B\n\n【分析】恐怖主义需证明：政治/宗教/意识形态目的+使用暴力或恐吓手段。"},
-  {id: 89, category: "criminal", question: "毒品犯罪(Drug Offences)的类型包括？", options: ["A. 仅持有", "B. 持有+供应+生产 (Possession + Supply + Production)", "C. 仅供应", "D. 无类型"], correct: 1, analysis: "【答案】B\n\n【分析】毒品犯罪类型：持有(Possession)、供应(Supply)、生产(Production)，每项有不同刑责。"},
-  {id: 90, category: "criminal", question: "网络犯罪(Cybercrime)的主要形式？", options: ["A. 仅黑客", "B. 黑客+欺诈+滥用 (Hacking + Fraud + Abuse)", "C. 仅欺诈", "D. 无形式"], correct: 1, analysis: "【答案】B\n\n【分析】网络犯罪包括：非法入侵(Hacking)、网络欺诈(Cyber Fraud)、滥用计算机(Computer Misuse)等。"},
-
-  // ============ 民事诉讼法 Civil Procedure ============
-  {id: 91, category: "procedure", question: "英国民事诉讼的基本原则？", options: ["A. 当事人主义", "B. 当事人主导+法院管理 (Party-led + Court Management)", "C. 法院主导", "D. 无原则"], correct: 1, analysis: "【答案】B\n\n【分析】英国民事诉讼由当事人主导，但法院有责任管理案件(Case Management)，确保公正高效。"},
-  {id: 92, category: "procedure", question: "诉讼时效(Limitation Period)的目的是？", options: ["A. 惩罚原告", "B. 促使及时起诉+证据保全", "C. 保护被告", "D. 无目的"], correct: 1, analysis: "【答案】B\n\n【分析】诉讼时效促使当事人及时起诉，避免证据灭失、记忆模糊，确保司法效率。"},
-  {id: 93, category: "procedure", question: "简易判决(Summary Judgment)的适用条件？", options: ["A. 任何案件", "B. 无实质争议 (No Real Prospect of Success)", "C. 仅小额", "D. 需开庭"], correct: 1, analysis: "【答案】B\n\n【分析】简易判决适用于案件无实质争议(No Real Prospect)，或对方无合理辩护可能。"},
-  {id: 94, category: "procedure", question: "证据开示(Discovery)的范围？", options: ["A. 仅相关", "B. 相关+对方文件 (Relevant + Opponent's Documents)", "C. 仅保密", "D. 无范围"], correct: 1, analysis: "【答案】B\n\n【分析】证据开示要求双方披露相关文件及对方文件，保障诉讼公平。"},
-  {id: 95, category: "procedure", question: "证人证词(Witness Statement)的要求？", options: ["A. 口头即可", "B. 书面+亲笔签署 (Written + Signed)", "C. 仅需出庭", "D. 无要求"], correct: 1, analysis: "【答案】B\n\n【分析】证人证词需书面形式，当事人签字确认，庭上证言通常基于书面证词。"},
-  {id: 96, category: "procedure", question: "专家证人(Expert Witness)的职责？", options: ["A. 为雇主服务", "B. 客观协助法院 (Assist the Court Objectively)", "C. 仅提供意见", "D. 无需资质"], correct: 1, analysis: "【答案】B\n\n【分析】专家证人职责是客观协助法院(CPR 35)，而非为委托方利益服务。"},
-  {id: 97, category: "procedure", question: "缺席判决(Default Judgment)的条件？", options: ["A. 被告不出庭", "B. 被告未抗辩+满足条件 (No Defence Filed)", "C. 仅不出庭", "D. 需证明"], correct: 1, analysis: "【答案】B\n\n【分析】缺席判决适用于被告未提出抗辩(Defence)，原告满足特定条件时。"},
-  {id: 98, category: "procedure", question: "中间禁令(Interim Injunction)的目的？", options: ["A. 最终判决", "B. 临时保全 (Preserve Status Quo)", "C. 惩罚", "D. 无目的"], correct: 1, analysis: "【答案】B\n\n【分析】中间禁令用于在诉讼期间临时保全财产或权利，防止无法弥补的损害。"},
-  {id: 99, category: "procedure", question: "管辖权(Jurisdiction)的确定原则？", options: ["A. 原告选择", "B. 被告住所+合同履行地+侵权行为地", "C. 法院决定", "D. 无规则"], correct: 1, analysis: "【答案】B\n\n【分析】管辖权基于：被告住所(Domicile)、合同履行地(Place of Performance)、侵权行为地(Place of Tort)等。"},
-  {id: 100, category: "procedure", question: "送达(Service)的法律要求？", options: ["A. 任意方式", "B. 法律规定方式 (CPR Compliant)", "C. 仅邮寄", "D. 无要求"], correct: 1, analysis: "【答案】B\n\n【分析】送达需符合CPR规定的方式，如面交、邮寄、替换送达等，确保被告知悉诉讼。"},
-  {id: 101, category: "procedure", question: "禁令(Injunction)的类型包括？", options: ["A. 仅临时", "B. 临时+永久 (Interim + Permanent)", "C. 仅永久", "D. 无类型"], correct: 1, analysis: "【答案】B\n\n【分析】禁令分为临时禁令(Interim/Preserving Status Quo)和永久禁令(Final/Prohibitory/Mandatory)。"},
-  {id: 102, category: "procedure", question: "损害赔偿(Damages)的计算原则？", options: ["A. 惩罚性", "B. 补偿性+回复原状 (Compensatory + Restitution)", "C. 象征性", "D. 无原则"], correct: 1, analysis: "【答案】B\n\n【分析】损害赔偿以补偿性为主(Compensatory)，旨在使原告回复到未受侵害的状态。"},
-  {id: 103, category: "procedure", question: "集体诉讼(Class Action)的适用条件？", options: ["A. 个人诉讼", "B. 共同问题+同类请求 (Common Issue + Similar Claims)", "C. 任意合并", "D. 无条件"], correct: 1, analysis: "【答案】B\n\n【分析】集体诉讼需满足：共同法律或事实问题(Common Issue)、同类请求(Similar Claims)。"},
-  {id: 104, category: "procedure", question: "上诉(Appeal)的标准？", options: ["A. 重新审理", "B. 法律错误+显著不公 (Error of Law + Serious Injustice)", "C. 仅法律错误", "D. 无标准"], correct: 1, analysis: "【答案】B\n\n【分析】上诉需证明：法律错误(Error of Law)或程序不公导致显著不公(Serious Injustice)。"},
-  {id: 105, category: "procedure", question: "强制执行(Enforcement)的方式包括？", options: ["A. 仅一种", "B. 查封+扣押+冻结 (Seizure + Attachment + Freezing)", "C. 仅冻结", "D. 无方式"], correct: 1, analysis: "【答案】B\n\n【分析】强制执行方式：查封财产(Seizure)、扣押收入(Attachment)、冻结银行账户(Freezing Order)等。"},
-
-  // ============ 宪法与行政法 Constitutional & Admin Law ============
-  {id: 106, category: "constitution", question: "英国宪法的特点？", options: ["A. 成文宪法", "B. 不成文宪法 (Uncodified)", "C. 法典", "D. 成文+不成文"], correct: 1, analysis: "【答案】B\n\n【分析】英国宪法是不成文宪法(Uncodified)，由制定法、判例法、习惯法组成。"},
-  {id: 107, category: "constitution", question: "议会主权(Parliamentary Sovereignty)的含义？", options: ["A. 君主主权", "B. 议会至上 (Supreme Parliament)", "C. 司法主权", "D. 民众主权"], correct: 1, analysis: "【答案】B\n\n【分析】议会主权(Parliamentary Sovereignty)指议会立法权至高无上，不受任何其他权力约束。"},
-  {id: 108, category: "constitution", question: "法治(Rule of Law)的核心要素？", options: ["A. 人治", "B. 法律至上+程序公正+权力限制", "C. 多数决", "D. 无核心"], correct: 1, analysis: "【答案】B\n\n【分析】法治核心：法律面前人人平等、司法独立、程序公正、权力受法律约束。"},
-  {id: 109, category: "constitution", question: "司法审查(Judicial Review)的依据？", options: ["A. 事实问题", "B. 程序合法+比例原则 (Procedural Ultra Vires + Proportionality)", "C. 仅实体", "D. 无依据"], correct: 1, analysis: "【答案】B\n\n【分析】司法审查基于程序合法(Procedural Ultra Vires)和实体审查，包括比例原则。"},
-  {id: 110, category: "constitution", question: "比例原则(Proportionality)的测试步骤？", options: ["A. 一步", "B. 合法目标+适当性+必要性+均衡", "C. 两步", "D. 无步骤"], correct: 1, analysis: "【答案】B\n\n【分析】比例原则测试：合法目标(Legitimate Aim)→适当性(Appropriateness)→必要性(Necessity)→均衡(Balance)。"},
-  {id: 111, category: "constitution", question: "人权法案(HRA 1998)的核心内容？", options: ["A. 创设权利", "B. 嵌入《欧洲人权公约》权利", "C. 废除权利", "D. 无内容"], correct: 1, analysis: "【答案】B\n\n【分析】《人权法案》将《欧洲人权公约》权利嵌入英国法律，赋予法院审查立法的权力。"},
-  {id: 112, category: "constitution", question: "公共利益豁免(Public Interest Immunity)的范围？", options: ["A. 无豁免", "B. 特定政府信息 (Certain Government Information)", "C. 全部豁免", "D. 无范围"], correct: 1, analysis: "【答案】B\n\n【分析】公共利益豁免允许政府在特定情况下拒绝披露敏感信息，如国家安全、外交事务。"},
-  {id: 113, category: "constitution", question: "行政决策的司法审查标准？", options: ["A. 重新决定", "B. 合法性审查 (Lawfulness)", "C. 仅程序", "D. 无审查"], correct: 1, analysis: "【答案】B\n\n【分析】司法审查不重新决定行政事项，而是审查其合法性(越权、程序不当、不合理)。"},
-  {id: 114, category: "constitution", question: "特许经营权(Prerogative Power)的性质？", options: ["A. 法定权力", "B. 剩余权力 (Residual Royal Power)", "C. 无限制", "D. 已废止"], correct: 1, analysis: "【答案】B\n\n【分析】特许经营权(Prerogative Power)是女王保留的剩余权力，虽受议会立法限制但仍存在。"},
-  {id: 115, category: "constitution", question: "权力下放(Devolution)的法律框架？", options: ["A. 单一制", "B. 权力下放立法 (Devolution Legislation)", "C. 联邦制", "D. 无框架"], correct: 1, analysis: "【答案】B\n\n【分析】权力下放通过《1998年苏格兰/威尔士/北爱尔兰法案》赋予地方议会立法权。"},
-
-  // ============ 金融与银行法 Banking & Finance Law ============
-  {id: 116, category: "banking", question: "银行与客户关系的性质？", options: ["A. 信托", "B. 合同+受信 (Contractual + Fiduciary)", "C. 代理", "D. 无特殊"], correct: 1, analysis: "【答案】B\n\n【分析】银行与客户关系兼具合同关系和受信关系，银行对客户资产负有谨慎义务。"},
-  {id: 117, category: "banking", question: "欺诈性转账(Fraudulent Transfer)的责任？", options: ["A. 客户自负", "B. 银行有义务核实 (Verification Duty)", "C. 无责任", "D. 各半"], correct: 1, analysis: "【答案】B\n\n【分析】银行有义务核实转账指令的真实性，否则对欺诈性转账承担责任。"},
-  {id: 118, category: "banking", question: "信用证(Letter of Credit)的独立原则？", options: ["A. 从属基础合同", "B. 独立于基础合同 (Independent Principle)", "C. 无关", "D. 无原则"], correct: 1, analysis: "【答案】B\n\n【分析】信用证独立于基础合同(Independent Principle)，银行仅凭单据付款，不介入合同争议。"},
-  {id: 119, category: "banking", question: "反洗钱(AML)的核心义务？", options: ["A. 可选", "B. 客户尽职调查+可疑交易报告 (CDD + SAR)", "C. 仅报告", "D. 无义务"], correct: 1, analysis: "【答案】B\n\n【分析】反洗钱义务：客户尽职调查(CDD)、可疑交易报告(SAR)、记录保存等。"},
-  {id: 120, category: "banking", question: "金融监管(FCA/PRA)的职责划分？", options: ["A. 单一监管", "B. 行为监管+审慎监管 (FCA Conduct + PRA Prudential)", "C. 无分工", "D. 无监管"], correct: 1, analysis: "【答案】B\n\n【分析】FCA负责行为监管(Conduct)，PRA负责审慎监管(Prudential)，共同构成双峰监管。"},
-  {id: 121, category: "banking", question: "内幕交易(Insider Dealing)的构成要素？", options: ["A. 仅需持有", "B. 内幕信息+交易 (Inside Information + Deal)", "C. 仅信息", "D. 无要素"], correct: 1, analysis: "【答案】B\n\n【分析】内幕交易需证明：持有内幕信息(Inside Information)+利用信息交易证券(Deal)。"},
-  {id: 122, category: "banking", question: "市场操纵(Market Manipulation)的形式？", options: ["A. 仅虚假", "B. 虚假交易+误导+持仓操纵", "C. 仅交易", "D. 无形式"], correct: 1, analysis: "【答案】B\n\n【分析】市场操纵包括：虚假交易(Wash Trade)、误导市场(Misleading)、持仓操纵(Trading in Concert)等。"},
-  {id: 123, category: "banking", question: "存款保护( FSCS)的覆盖范围？", options: ["A. 无保护", "B. 85,000英镑/人/机构", "C. 无限额", "D. 仅自有"], correct: 1, analysis: "【答案】B\n\n【分析】金融服务补偿计划(FSCS)为每位存户提供最高85,000英镑的存款保护。"},
-  {id: 124, category: "banking", question: "支付服务(PSR)的目的？", options: ["A. 限制支付", "B. 规范支付服务+保护消费者", "C. 无目的", "D. 仅规范"], correct: 1, analysis: "【答案】B\n\n【分析】支付服务法规(PSR)规范支付服务提供者行为，保护消费者权益和支付系统安全。"},
-  {id: 125, category: "banking", question: "电子货币(E-money)监管要求？", options: ["A. 无监管", "B. 审慎要求+消费者保护", "C. 仅税收", "D. 无要求"], correct: 1, analysis: "【答案】B\n\n【分析】电子货币发行需满足审慎要求，包括资本金、客户资产隔离、消费者保护等。"},
-
-  // ============ 知识产权法 Intellectual Property ============
-  {id: 126, category: "ip", question: "版权(Copyright)的保护对象？", options: ["A. 思想", "B. 表达 (Expression)", "C. 仅文字", "D. 无保护"], correct: 1, analysis: "【答案】B\n\n【分析】版权保护表达(Expression)而非思想(Idea)，如文学作品、音乐、艺术作品。"},
-  {id: 127, category: "ip", question: "专利(Patent)的授予条件？", options: ["A. 现有技术", "B. 新颖性+创造性+工业适用性", "C. 仅新颖", "D. 无条件"], correct: 1, analysis: "【答案】B\n\n【分析】专利需满足：新颖性(Novelty)、创造性(Inventive Step)、工业适用性(Industrial Applicability)。"},
-  {id: 128, category: "ip", question: "商标(Trade Mark)的保护期？", options: ["A. 5年", "B. 10年+可续期", "C. 永久", "D. 20年"], correct: 1, analysis: "【答案】B\n\n【分析】商标保护期10年，可无限续期，每次续期10年。"},
-  {id: 129, category: "ip", question: "商业秘密(Trade Secret)的保护条件？", options: ["A. 无条件", "B. 保密+价值+合理措施", "C. 仅保密", "D. 无保护"], correct: 1, analysis: "【答案】B\n\n【分析】商业秘密保护需满足：具有商业价值、采取合理保密措施、非公知信息。"},
-  {id: 130, category: "ip", question: "合理使用(Fair Dealing)的例外？", options: ["A. 无限", "B. 研究+评论+新闻报道", "C. 仅教育", "D. 无例外"], correct: 1, analysis: "【答案】B\n\n【分析】合理使用包括：研究、评论、新闻报道、教学、图书馆使用等有限例外。"},
-  {id: 131, category: "ip", question: "设计权(Registered Design)的保护期？", options: ["A. 5年", "B. 25年+可续期", "C. 永久", "D. 10年"], correct: 1, analysis: "【答案】B\n\n【分析】注册设计保护期25年，每5年续期一次，最长25年。"},
-  {id: 132, category: "ip", question: "专利侵权(Patent Infringement)的形式？", options: ["A. 仅制造", "B. 制造+使用+销售+进口", "C. 仅销售", "D. 无形式"], correct: 1, analysis: "【答案】B\n\n【分析】专利侵权包括：制造(Make)、使用(Use)、销售(Sell)、进口(Import)专利产品。"},
-  {id: 133, category: "ip", question: "版权侵权(Copyright Infringement)的判断标准？", options: ["A. 相同", "B. 实质相似+接触 (Substantial Similarity + Access)", "C. 仅接触", "D. 无标准"], correct: 1, analysis: "【答案】B\n\n【分析】版权侵权判断：实质相似(Substantial Similarity)+接触过原作品(Access)。"},
-  {id: 134, category: "ip", question: "植物新品种(Plant Varieties)的保护？", options: ["A. 无保护", "B. UPOV体系保护", "C. 专利保护", "D. 无体系"], correct: 1, analysis: "【答案】B\n\n【分析】植物新品种通过UPOV体系获得保护，不同于专利或植物专利。"},
-  {id: 135, category: "ip", question: "域名(Domain Name)争议的解决机制？", options: ["A. 法院诉讼", "B. UDRP仲裁 (Uniform Domain-Name Dispute-Resolution Policy)", "C. 无机制", "D. 仅ICANN"], correct: 1, analysis: "【答案】B\n\n【分析】域名争议通过UDRP仲裁解决，投诉人需证明：混淆性相似+无权利+恶意注册。"},
-
-  // ============ 竞争法 Competition Law ============
-  {id: 136, category: "competition", question: "竞争法的核心目标？", options: ["A. 保护大企业", "B. 保护消费者+促进竞争", "C. 限制竞争", "D. 无目标"], correct: 1, analysis: "【答案】B\n\n【分析】竞争法旨在保护消费者利益、促进市场有效竞争、防止垄断。"},
-  {id: 137, category: "competition", question: "禁止卡特尔(Cartel)的类型？", options: ["A. 仅价格", "B. 价格+产量+划分市场+串通投标", "C. 仅投标", "D. 无类型"], correct: 1, analysis: "【答案】B\n\n【分析】卡特尔包括：固定价格(Fix Prices)、限制产量(Limit Output)、划分市场(Market Sharing)、串通投标(Bid Rigging)。"},
-  {id: 138, category: "competition", question: "滥用市场支配地位(Abuse)的例子？", options: ["A. 低价", "B. 垄断定价+拒绝交易+独家限制", "C. 仅高价", "D. 无例子"], correct: 1, analysis: "【答案】B\n\n【分析】滥用市场支配地位包括：垄断定价(Excessive Pricing)、拒绝交易(Refusal to Deal)、独家交易(Exclusive Dealing)。"},
-  {id: 139, category: "competition", question: "合并(Merger)审查的标准？", options: ["A. 无标准", "B. 市场份额+竞争实质减少 (Market Share + Substantial Lessening)", "C. 仅金额", "D. 无审查"], correct: 1, analysis: "【答案】B\n\n【分析】合并审查标准：市场份额及是否导致竞争实质减少(Substantial Lessening of Competition)。"},
-  {id: 140, category: "competition", question: "纵向合并(Vertical Merger)的审查重点？", options: ["A. 市场封锁", "B. 封锁效应+杠杆效应", "C. 仅价格", "D. 无重点"], correct: 1, analysis: "【答案】B\n\n【分析】纵向合并审查重点：是否导致市场封锁(foreclosure)或杠杆效应(Leverage)。"},
-  {id: 141, category: "competition", question: "限制竞争协议(Anti-competitive Agreement)的豁免条件？", options: ["A. 无豁免", "B. 效率效益+消费者分享+必要限制", "C. 仅效率", "D. 无条件"], correct: 1, analysis: "【答案】B\n\n【分析】豁免条件：产生效率效益(Efficiency Gains)、消费者合理分享、必要限制(Not Indispensable)。"},
-  {id: 142, category: "competition", question: "市场支配地位(Dominant Position)的认定因素？", options: ["A. 仅份额", "B. 市场份额+进入壁垒+能力", "C. 仅壁垒", "D. 无因素"], correct: 1, analysis: "【答案】B\n\n【分析】市场支配地位认定：市场份额(Market Share)、进入壁垒(Barriers to Entry)、竞争者能力(Countervailing Power)。"},
-  {id: 143, category: "competition", question: "国家援助(State Aid)的合法性审查？", options: ["A. 全部合法", "B. 欧盟条约+成员国会商", "C. 无审查", "D. 仅国内"], correct: 1, analysis: "【答案】B\n\n【分析】国家援助需符合欧盟条约例外规定，通常需与欧盟委员会(State Aid)会商批准。"},
-  {id: 144, category: "competition", question: "竞争执法机构(CMA)的权力？", options: ["A. 无权力", "B. 调查+处罚+民事权力", "C. 仅调查", "D. 无权力"], correct: 1, analysis: "【答案】B\n\n【分析】竞争与市场管理局(CMA)有权：调查(Investigation)、处罚(Fines)、要求行为/结构救济。"},
-  {id: 145, category: "competition", question: "私人诉讼(Private Action)的作用？", options: ["A. 无作用", "B. 补充执法+赔偿", "C. 替代", "D. 无补充"], correct: 1, analysis: "【答案】B\n\n【分析】私人诉讼补充公共执法，受害方可提起损害赔偿诉讼(Private Competition Claims)。"},
-
-  // ============ 劳动法 Employment Law ============
-  {id: 146, category: "employment", question: "雇佣关系的形成条件？", options: ["A. 书面合同", "B. 劳动+控制+对价 (Labour + Control + Consideration)", "C. 仅劳动", "D. 无条件"], correct: 1, analysis: "【答案】B\n\n【分析】雇佣关系需满足：提供劳动(Service)、雇主控制(Control)、对价支付(Pay)。"},
-  {id: 147, category: "employment", question: "不公平解雇(Unfair Dismissal)的救济？", options: ["A. 无救济", "B. 复职+赔偿+推荐信", "C. 仅赔偿", "D. 无救济"], correct: 1, analysis: "【答案】B\n\n【分析】不公平解雇救济：复职(Reinstatement)、赔偿(Compensation)、推荐信(Character Reference)。"},
-  {id: 148, category: "employment", question: "歧视(Discrimination)的类型？", options: ["A. 仅性别", "B. 直接+间接+骚扰+受害", "C. 仅种族", "D. 无类型"], correct: 1, analysis: "【答案】B\n\n【分析】歧视类型：直接歧视(Direct)、间接歧视(Indirect)、骚扰(Harassment)、受害(Victimisation)。"},
-  {id: 149, category: "employment", question: "最低工资(National Living Wage)的标准？", options: ["A. 任意", "B. 按年龄分级", "C. 统一", "D. 无标准"], correct: 1, analysis: "【答案】B\n\n【分析】英国最低工资按年龄分级：25岁以上、21-24岁、18-20岁、16-17岁不同标准。"},
-  {id: 150, category: "employment", question: "工作时间的限制？", options: ["A. 无限制", "B. 48小时周上限 (Weekly Limit 48hrs)", "C. 60小时", "D. 无上限"], correct: 1, analysis: "【答案】B\n\n【分析】《工作时间法规》规定每周工作48小时上限，可选择退出(Opt-out)但需书面同意。"}
+  // 侵权法 (Tort) - 3张
+  {category: "tort", question: "Negligence 侵权的四要素？", answer: "Donoghue v Stevenson [1932] 确立：\n\n1. Duty of Care 注意义务\n   需 proximity（邻近性）\n\n\n2. Breach 违反义务\n   未达合理人标准\n\n3. Causation 因果关系\n   factual: 'but for' 测试\n   legal: foreseeability（可预见性）\n\n4. Damage 损害\n   须为实际损害，非纯经济损失（特定情况除外）"},
+  {category: "tort", question: "Nuisance 私妨害与公妨害的区别？", answer: "私妨害 Private Nuisance：\n• 干扰土地使用者对土地的享用\n• 须为相邻土地间\n• 原告须为土地权益持有人\n• 测试：合理性（reasonableness）\n\n公妨害 Public Nuisance：\n• 干扰公众共同权利\n• 须证明特殊损害（special damage）\n• 可公诉\n• 示例：阻塞公共道路"},
+  {category: "tort", question: "Vicarious Liability 雇主替代责任？", answer: "雇主对雇员在雇佣范围内的行为负责。\n\n测试（新标准）：\n1. 关系测试：存在雇佣关系\n2. 关联测试：行为与职责充分关联\n\n关键：\n• 即使行为违法也可能负责\n• 即使雇主不知情/禁止\n• 独立承包商通常不适用\n\n示例：Mohamoud v White [2014] 送货员撞人，雇主负责。"}
 ];
 
 // 词汇数据
 var vocabData = [
-  // 核心词汇
-  {en: "Offer", zh: "要约"},
-  {en: "Acceptance", zh: "承诺"},
-  {en: "Consideration", zh: "对价"},
-  {en: "Breach of Contract", zh: "违约"},
-  {en: "Damages", zh: "损害赔偿"},
-  {en: "Negligence", zh: "过失"},
-  {en: "Duty of Care", zh: "注意义务"},
+  {en: "Offer", zh: "要约 - 一方当事人向对方提出的订立合同的建议"},
+  {en: "Acceptance", zh: "承诺 - 对要约的无条件同意"},
+  {en: "Consideration", zh: "对价 - 合同各方向对方提供的有价值的东西"},
+  {en: "Privity of contract", zh: "合同相对性 - 只有合同当事人可主张合同权利"},
+  {en: "Breach of contract", zh: "违约 - 违反合同条款的行为"},
+  {en: "Damages", zh: "损害赔偿 - 违约救济"},
+  {en: "Specific performance", zh: "实际履行 - 强制执行合同"},
+  {en: "Injunction", zh: "禁令 - 禁止或强制某行为"},
+  {en: "Tort", zh: "侵权 - 民事过错行为"},
+  {en: "Negligence", zh: "过失 - 未尽合理注意义务"},
+  {en: "Duty of care", zh: "注意义务"},
   {en: "Breach", zh: "违反"},
   {en: "Causation", zh: "因果关系"},
-  {en: "Remoteness", zh: "间接损失原则"},
-  {en: "Trust", zh: "信托"},
-  {en: "Beneficiary", zh: "受益人"},
-  {en: "Trustee", zh: "受托人"},
-  {en: "Freehold", zh: "永久产权"},
-  {en: "Leasehold", zh: "租赁产权"},
-  {en: "Easement", zh: "地役权"},
-  {en: "Legacy", zh: "遗赠"},
-  {en: "Testator", zh: "立遗嘱人"},
-  {en: "Will", zh: "遗嘱"},
-  {en: "Probate", zh: "遗嘱认证"},
-  {en: "Ademption", zh: "遗赠失效"},
-  {en: "Lapse", zh: "失效"},
-  {en: "Abatement", zh: "削减"},
-  {en: "Specific Legacy", zh: "特定遗赠"},
-  {en: "General Legacy", zh: "一般遗赠"},
-  {en: "Residuary Legacy", zh: "剩余遗产遗赠"},
-  {en: "Mortgage", zh: "抵押"},
-  {en: "Lease", zh: "租约"},
-  {en: "License", zh: "许可"},
-  // 新增词汇
-  {en: "The particulars of claim", zh: "索赔详情"},
-  {en: "Tipping off", zh: "泄露罪"},
-  {en: "Strike out", zh: "驳回"},
-  {en: "Unfair prejudice remedy", zh: "不公平损害救济"},
-  {en: "Vicarious liability", zh: "替代责任（雇主对雇员）"},
-  {en: "Balance of probabilities", zh: "盖然性权衡（民事证明标准）"},
-  {en: "1L", zh: "法学院一年级学生"},
-  {en: "2L", zh: "法学院二年级学生"},
-  {en: "3L", zh: "法学院三年级学生"},
-  {en: "401(k) plan", zh: "401(k)退休计划"},
-  {en: "419 scam", zh: "419诈骗（预付费诈骗）"},
-  {en: "ABA", zh: "美国律师协会"},
-  {en: "Abate", zh: "降低；减少；撤销"},
-  {en: "Abatement of taxes", zh: "税收减免"},
-  {en: "Abdicate", zh: "放弃（权力/职位）"},
-  {en: "Abduct", zh: "绑架"},
-  {en: "Abduction", zh: "绑架"},
-  {en: "Abet", zh: "教唆；协助犯罪"},
-  {en: "Abettor", zh: "教唆犯；共犯"},
-  {en: "Ab initio", zh: "自始"},
-  {en: "Abrogate", zh: "废除"},
-  {en: "Abscond", zh: "潜逃"},
-  {en: "Absolve", zh: "宣告无罪"},
-  {en: "Abstract of title", zh: "产权摘要"},
-  {en: "Abuse of discretion", zh: "滥用自由裁量权"},
-  {en: "Abuse of process", zh: "滥用诉讼程序"},
-  {en: "Acceleration clause", zh: "加速条款"},
-  {en: "Acceptance, conditional", zh: "附条件承诺"},
-  {en: "Acceptance, implied", zh: "默示承诺"},
-  {en: "Access to justice", zh: "诉诸司法的权利"},
-  {en: "Accomplice", zh: "共犯"},
-  {en: "Accord", zh: "协议；和解"},
-  {en: "Account for", zh: "解释"},
-  {en: "Acquittal", zh: "宣告无罪"},
-  {en: "Actual authority", zh: "实际授权"},
-  {en: "Act of God", zh: "不可抗力"},
-  {en: "Ad litem", zh: "专为诉讼指定的"},
-  {en: "Ad valorem tax", zh: "从价税"},
-  {en: "Advance directive", zh: "预先医疗指示"},
-  {en: "Adversary proceeding", zh: "对抗式程序"},
-  {en: "Adverse possession", zh: "逆权占有"},
-  {en: "Affidavit", zh: "宣誓书"},
-  {en: "Affirmative action", zh: "平权行动"},
-  {en: "Affirmative defense", zh: "积极抗辩"},
-  {en: "Age of majority", zh: "成年年龄"},
-  {en: "Aid and abet", zh: "协助与教唆"},
-  {en: "Alibi", zh: "不在场证明"},
-  {en: "Alien", zh: "外国人"},
-  {en: "Alimony", zh: "赡养费"},
-  {en: "Allegation", zh: "主张；指控"},
-  {en: "Amicus curiae", zh: "法庭之友"},
-  {en: "Amnesty", zh: "大赦"},
-  {en: "Annulment", zh: "废除"},
-  {en: "Anti-competitive practice", zh: "反竞争行为"},
-  {en: "Antitrust", zh: "反垄断"},
-  {en: "Appeal", zh: "上诉"},
-  {en: "Appearance", zh: "出庭"},
-  {en: "Appellate court", zh: "上诉法院"},
-  {en: "Arraignment", zh: "传讯"},
-  {en: "Arson", zh: "纵火罪"},
-  {en: "Assault", zh: "袭击"},
-  {en: "Assignment", zh: "转让"},
-  {en: "Attachment", zh: "扣押"},
-  {en: "Attorney-client privilege", zh: "律师-客户特权"},
-  {en: "Bail", zh: "保释"},
-  {en: "Bail bond", zh: "保释保证金"},
-  {en: "Bailee", zh: "受托人"},
-  {en: "Bailment", zh: "寄托；保管"},
-  {en: "Bailor", zh: "寄托人"},
-  {en: "Balance sheet", zh: "资产负债表"},
-  {en: "Balloon mortgage", zh: "气球式抵押贷款"},
-  {en: "Bankruptcy", zh: "破产"},
-  {en: "Battery", zh: "殴打"},
-  {en: "Bearer", zh: "持票人"},
-  {en: "Bench trial", zh: "法官审理"},
-  {en: "Beyond reasonable doubt", zh: "无合理怀疑"},
-  {en: "Bid", zh: "投标"},
-  {en: "Bill of lading", zh: "提单"},
-  {en: "Bill of Rights", zh: "人权法案"},
-  {en: "Bona fide", zh: "善意"},
-  {en: "Bribery", zh: "贿赂"},
-  {en: "Burden of proof", zh: "举证责任"},
-  {en: "Burglary", zh: "盗窃罪"},
-  {en: "Capital gain", zh: "资本利得"},
-  {en: "Capital punishment", zh: "死刑"},
-  {en: "Carjacking", zh: "劫车"},
-  {en: "Case law", zh: "判例法"},
-  {en: "Causation", zh: "因果关系"},
-  {en: "Cause of action", zh: "诉因"},
-  {en: "Caveat", zh: "警告"},
-  {en: "Caveat emptor", zh: "买者自负"},
-  {en: "Certiorari", zh: "调卷令"},
-  {en: "Challenge for cause", zh: "有原因要求陪审员退席"},
-  {en: "Champerty", zh: "帮讼牟利"},
-  {en: "Chancellor", zh: "大法官"},
-  {en: "Chancery", zh: "衡平法院"},
-  {en: "Charge", zh: "指控；抵押"},
-  {en: "Chattel", zh: "动产"},
-  {en: "Child support", zh: "子女抚养费"},
-  {en: "Circumstantial evidence", zh: "间接证据"},
-  {en: "Citation", zh: "罚单；传票"},
-  {en: "Civil case", zh: "民事案件"},
-  {en: "Civil law", zh: "民法"},
-  {en: "Civil liability", zh: "民事责任"},
-  {en: "Class action", zh: "集体诉讼"},
-  {en: "Clean hands", zh: "干净之手原则"},
-  {en: "Clerk", zh: "书记员"},
-  {en: "Closing argument", zh: "终结陈述"},
-  {en: "Cocaine", zh: "可卡因"},
-  {en: "Code of conduct", zh: "行为准则"},
-  {en: "Co-defendant", zh: "共同被告"},
-  {en: "Coercion", zh: "强迫"},
-  {en: "Cohabitation", zh: "同居"},
-  {en: "Collateral", zh: "担保物"},
-  {en: "Collective bargaining", zh: "集体谈判"},
-  {en: "Collusion", zh: "串通"},
-  {en: "Comity", zh: "礼让"},
-  {en: "Common law", zh: "普通法"},
-  {en: "Community property", zh: "夫妻共同财产"},
-  {en: "Compensatory damages", zh: "补偿性赔偿"},
-  {en: "Complaint", zh: "起诉状"},
-  {en: "Concurrent sentence", zh: "合并刑期"},
-  {en: "Consecutive sentence", zh: "连续刑期"},
-  {en: "Confession", zh: "认罪"},
-  {en: "Confiscate", zh: "没收"},
-  {en: "Confrontation", zh: "对质"},
-  {en: "Conspiracy", zh: "共谋"},
-  {en: "Constitutional right", zh: "宪法权利"},
-  {en: "Contempt of court", zh: "蔑视法庭"},
-  {en: "Contingency", zh: "偶然性"},
-  {en: "Contract", zh: "合同"},
-  {en: "Contributory negligence", zh: "共同过失"},
-  {en: "Conversion", zh: "侵占动产"},
-  {en: "Convict", zh: "定罪"},
-  {en: "Conviction", zh: "判罪"},
-  {en: "Coroner", zh: "验尸官"},
-  {en: "Corroborate", zh: "证实"},
-  {en: "Counterclaim", zh: "反诉"},
-  {en: "Covenant", zh: "契约"},
-  {en: "Credibility", zh: "可信度"},
-  {en: "Crime", zh: "犯罪"},
-  {en: "Criminal case", zh: "刑事案件"},
-  {en: "Criminal intent", zh: "犯罪意图"},
-  {en: "Cross-examination", zh: "盘问"},
-  {en: "Cruelty", zh: "虐待"},
-  {en: "Curfew", zh: "宵禁"},
-  {en: "Custody", zh: "监护权；羁押"},
-  {en: "Damages", zh: "赔偿金"},
-  {en: "De facto", zh: "事实上"},
-  {en: "De jure", zh: "法律上"},
-  {en: "Deadly weapon", zh: "致命武器"},
-  {en: "Death sentence", zh: "死刑"},
-  {en: "Debt", zh: "债务"},
-  {en: "Decree", zh: "判决"},
+  {en: "Foreseeability", zh: "可预见性"},
+  {en: "Remoteness of damage", zh: "损害的远程性"},
+  {en: "Vicarious liability", zh: "替代责任"},
+  {en: "Trespass", zh: "非法侵入"},
+  {en: "Nuisance", zh: "妨害"},
   {en: "Defamation", zh: "诽谤"},
-  {en: "Default", zh: "缺席"},
-  {en: "Default judgment", zh: "缺席判决"},
-  {en: "Defendant", zh: "被告"},
-  {en: "Defense", zh: "辩护"},
-  {en: "Deferred prosecution", zh: "缓期起诉"},
-  {en: "Defraud", zh: "诈骗"},
-  {en: "Delinquency", zh: "逾期"},
-  {en: "Demurrer", zh: "驳回申请"},
-  {en: "Denunciation", zh: "谴责"},
-  {en: "Deportation", zh: "驱逐出境"},
-  {en: "Deposition", zh: "宣誓证言"},
-  {en: "Deprivation", zh: "剥夺"},
-  {en: "Derivative action", zh: "派生诉讼"},
-  {en: "Desertion", zh: "遗弃"},
-  {en: "Destruction of property", zh: "破坏财物"},
-  {en: "Detainer", zh: "扣押"},
-  {en: "Detention", zh: "拘留"},
-  {en: "Determination", zh: "裁定"},
-  {en: "Devise", zh: "遗赠（不动产）"},
-  {en: "Diligence", zh: "勤勉"},
-  {en: "Diplomatic immunity", zh: "外交豁免权"},
-  {en: "Direct examination", zh: "直接询问"},
-  {en: "Disability", zh: "残疾"},
-  {en: "Disbarment", zh: "取消律师资格"},
-  {en: "Discharge", zh: "解除"},
-  {en: "Discontinuance", zh: "中止诉讼"},
-  {en: "Discovery", zh: "证据开示"},
-  {en: "Discretion", zh: "自由裁量权"},
-  {en: "Discrimination", zh: "歧视"},
-  {en: "Dismissal", zh: "驳回"},
-  {en: "Dismissal with prejudice", zh: "有偏见驳回"},
-  {en: "Dismissal without prejudice", zh: "无偏见驳回"},
-  {en: "Disorderly conduct", zh: "扰乱治安"},
-  {en: "Dispute", zh: "争议"},
-  {en: "Disqualification", zh: "取消资格"},
-  {en: "Dissolution", zh: "解散"},
-  {en: "Distraint", zh: "扣押财物"},
-  {en: "Disturbing the peace", zh: "扰乱治安"},
-  {en: "Diversity jurisdiction", zh: "异籍管辖权"},
-  {en: "Divestiture", zh: "剥夺"},
-  {en: "Dividend", zh: "股息"},
-  {en: "Divorce", zh: "离婚"},
-  {en: "Docket", zh: "案件目录"},
-  {en: "Domain name", zh: "域名"},
-  {en: "Domestic violence", zh: "家庭暴力"},
-  {en: "Domicile", zh: "住所地"},
-  {en: "Donor", zh: "捐赠人"},
-  {en: "Double jeopardy", zh: "一罪不二审"},
-  {en: "Due process", zh: "正当程序"},
-  {en: "Duress", zh: "胁迫"},
-  {en: "Duty", zh: "义务"},
-  {en: "Easement", zh: "地役权"},
-  {en: "Eavesdropping", zh: "窃听"},
-  {en: "Ejusdem generis", zh: "同类规则"},
-  {en: "Ejectment", zh: "收回不动产之诉"},
-  {en: "Embezzlement", zh: "侵占"},
-  {en: "Eminent domain", zh: "国家征用权"},
-  {en: "Empirical", zh: "经验主义的"},
-  {en: "Employment", zh: "雇佣"},
-  {en: "Enabling act", zh: "授权法"},
-  {en: "Endorsement", zh: "背书"},
-  {en: "Enjoin", zh: "禁止"},
-  {en: "Entitlement", zh: "权利"},
-  {en: "Equal protection", zh: "平等保护"},
-  {en: "Equitable", zh: "衡平法的"},
-  {en: "Equitable remedy", zh: "衡平法救济"},
-  {en: "Equity", zh: "衡平法"},
-  {en: "Escape clause", zh: "免责条款"},
-  {en: "Escrow", zh: "托管"},
-  {en: "Escrow account", zh: "托管账户"},
-  {en: "Estate", zh: "遗产"},
-  {en: "Estate tax", zh: "遗产税"},
-  {en: "Estoppel", zh: "禁止反言"},
-  {en: "Evidence", zh: "证据"},
-  {en: "Ex parte", zh: "单方面的"},
-  {en: "Examination", zh: "审查"},
-  {en: "Exception", zh: "异议"},
-  {en: "Excessive force", zh: "过度武力"},
-  {en: "Exculpatory", zh: "开脱罪责的"},
-  {en: "Executed contract", zh: "已执行合同"},
-  {en: "Execution", zh: "执行"},
-  {en: "Executor", zh: "遗嘱执行人"},
-  {en: "Exemplary damages", zh: "惩罚性赔偿"},
-  {en: "Exemption", zh: "豁免"},
-  {en: "Exhibit", zh: "证据"},
-  {en: "Exigent circumstances", zh: "紧急情况"},
-  {en: "Exoneration", zh: "免除责任"},
-  {en: "Expunge", zh: "删除记录"},
-  {en: "Extortion", zh: "勒索"},
-  {en: "Extradition", zh: "引渡"},
-  {en: "Eyewitness", zh: "目击证人"},
-  {en: "Fabrication", zh: "捏造"},
-  {en: "Face value", zh: "面值"},
-  {en: "Fact", zh: "事实"},
-  {en: "Fair use", zh: "公平使用"},
-  {en: "False arrest", zh: "非法逮捕"},
-  {en: "False imprisonment", zh: "非法拘禁"},
-  {en: "False pretenses", zh: "欺诈手段"},
-  {en: "Family law", zh: "家庭法"},
-  {en: "Favicon", zh: "网站图标"},
-  {en: "Feasible", zh: "可行的"},
-  {en: "Federal question", zh: "联邦问题"},
-  {en: "Fee simple", zh: "完全保有"},
-  {en: "Felony", zh: "重罪"},
-  {en: "Fiduciary", zh: "受托人"},
-  {en: "Fiduciary duty", zh: "受信义务"},
-  {en: "Filing", zh: "提交"},
-  {en: "Final judgment", zh: "终局判决"},
-  {en: "Finding", zh: "认定"},
-  {en: "Fine", zh: "罚款"},
-  {en: "Fingerprint", zh: "指纹"},
-  {en: "Firearm", zh: "枪械"},
-  {en: "Fixture", zh: "固定附着物"},
-  {en: "FLK1", zh: "功能性法律知识1"},
-  {en: "FLK2", zh: "功能性法律知识2"},
-  {en: "Foreclosure", zh: "止赎"},
-  {en: "Forensic", zh: "法医的"},
-  {en: "Forfeiture", zh: "没收"},
-  {en: "Forgery", zh: "伪造"},
-  {en: "Fraud", zh: "欺诈"},
-  {en: "Fraudulent", zh: "欺诈的"},
-  {en: "Frisk", zh: "搜身"},
-  {en: "Frivolous", zh: "无意义的"},
-  {en: "Fugitive", zh: "逃犯"},
-  {en: "Gag order", zh: "禁止谈论令"},
-  {en: "Gaming", zh: "赌博"},
-  {en: "Garnishment", zh: "扣押债权"},
-  {en: "General jurisdiction", zh: "一般管辖权"},
-  {en: "Gift", zh: "赠与"},
-  {en: "Good cause", zh: "正当理由"},
-  {en: "Good faith", zh: "诚信"},
-  {en: "Grand jury", zh: "大陪审团"},
-  {en: "Grand theft", zh: "重大盗窃"},
-  {en: "Grantor", zh: "授予人"},
-  {en: "Guardian", zh: "监护人"},
-  {en: "Guardian ad litem", zh: "诉讼监护人"},
-  {en: "Habeas corpus", zh: "人身保护令"},
-  {en: "Harassment", zh: "骚扰"},
-  {en: "Hate crime", zh: "仇恨犯罪"},
-  {en: "Hearsay", zh: "传闻证据"},
-  {en: "Heir", zh: "继承人"},
-  {en: "Hereditary", zh: "世袭的"},
-  {en: "Homicide", zh: "杀人"},
-  {en: "Hostile witness", zh: "敌对证人"},
-  {en: "Hung jury", zh: "悬而未决陪审团"},
-  {en: "Hypothesis", zh: "假设"},
-  {en: "Identity theft", zh: "身份盗窃"},
-  {en: "Ignorance of law", zh: "不懂法律"},
-  {en: "Illegal", zh: "非法的"},
-  {en: "Immunity", zh: "豁免权"},
-  {en: "Impeachment", zh: "弹劾"},
-  {en: "Implied consent", zh: "默示同意"},
-  {en: "Implied warranty", zh: "默示担保"},
-  {en: "Impound", zh: "没收"},
-  {en: "In camera", zh: "不公开审理"},
-  {en: "Incapacity", zh: "无行为能力"},
-  {en: "Incarceration", zh: "监禁"},
-  {en: "Incest", zh: "乱伦"},
-  {en: "Inchoate", zh: "未完成的"},
-  {en: "Incite", zh: "煽动"},
-  {en: "Income tax", zh: "所得税"},
-  {en: "Incompetent", zh: "无能力的"},
-  {en: "Incorporate", zh: "成立公司"},
-  {en: "Indemnify", zh: "赔偿"},
-  {en: "Indemnity", zh: "赔偿"},
-  {en: "Indictment", zh: "大陪审团起诉书"},
-  {en: "Indigent", zh: "贫困的"},
-  {en: "Induction", zh: "归纳"},
-  {en: "Ineffective assistance", zh: "无效协助"},
-  {en: "Infraction", zh: "违规"},
-  {en: "Injunction", zh: "禁令"},
-  {en: "Injunctive relief", zh: "禁令救济"},
-  {en: "In personam", zh: "对人诉讼"},
-  {en: "In rem", zh: "对物诉讼"},
-  {en: "Insanity", zh: "精神失常"},
-  {en: "Insider trading", zh: "内幕交易"},
-  {en: "Insolvency", zh: "破产"},
-  {en: "Instigate", zh: "煽动"},
-  {en: "Instrument", zh: "文书"},
-  {en: "Intangible property", zh: "无形财产"},
-  {en: "Integration", zh: "集成"},
-  {en: "Integrity", zh: "诚信"},
-  {en: "Intellectual property", zh: "知识产权"},
-  {en: "Intent", zh: "意图"},
-  {en: "Intercourse", zh: "交往"},
-  {en: "Interest", zh: "利息"},
-  {en: "Interference", zh: "干涉"},
-  {en: "Interim", zh: "临时的"},
-  {en: "International law", zh: "国际法"},
-  {en: "Interrogation", zh: "审讯"},
-  {en: "Intervenor", zh: "介入人"},
-  {en: "Intimidation", zh: "恐吓"},
-  {en: "Intoxication", zh: "醉酒"},
-  {en: "Injunction", zh: "禁令"},
-  {en: "Joint tenancy", zh: "联合租赁"},
-  {en: "Judge", zh: "法官"},
-  {en: "Judgment", zh: "判决"},
-  {en: "Judicial notice", zh: "司法认知"},
-  {en: "Judicial review", zh: "司法审查"},
-  {en: "Jurisdiction", zh: "管辖权"},
-  {en: "Jurisprudence", zh: "法学"},
-  {en: "Juror", zh: "陪审员"},
-  {en: "Jury", zh: "陪审团"},
-  {en: "Jury trial", zh: "陪审团审判"},
-  {en: "Justice", zh: "正义"},
-  {en: "Justifiable", zh: "正当的"},
-  {en: "Kidnapping", zh: "绑架"},
-  {en: "Labor law", zh: "劳动法"},
-  {en: "Laches", zh: "懈怠"},
-  {en: "Landmark", zh: "里程碑"},
-  {en: "Larceny", zh: "盗窃罪"},
-  {en: "Law", zh: "法律"},
-  {en: "Lawyer", zh: "律师"},
-  {en: "Lay", zh: "外行的"},
-  {en: "Leading question", zh: "诱导性问题"},
-  {en: "Lease", zh: "租赁"},
-  {en: "Legal aid", zh: "法律援助"},
-  {en: "Legal notice", zh: "法律通知"},
-  {en: "Legal tender", zh: "法定货币"},
-  {en: "Legality", zh: "合法性"},
-  {en: "Legislature", zh: "立法机关"},
-  {en: "Lemon law", zh: "柠檬法"},
-  {en: "Liability", zh: "责任"},
-  {en: "Libel", zh: "书面诽谤"},
-  {en: "License", zh: "许可"},
-  {en: "Lien", zh: "留置权"},
-  {en: "Life estate", zh: "终身财产权"},
-  {en: "Life imprisonment", zh: "无期徒刑"},
-  {en: "Limitation", zh: "限制"},
-  {en: "Limited liability", zh: "有限责任"},
-  {en: "Lineup", zh: "列队辨认"},
-  {en: "Liquidated damages", zh: "约定违约金"},
-  {en: "Liquidation", zh: "清算"},
-  {en: "Litigation", zh: "诉讼"},
-  {en: "Litigant", zh: "诉讼当事人"},
-  {en: "Living will", zh: "生前遗嘱"},
-  {en: "Loan", zh: "贷款"},
-  {en: "Loansharking", zh: "高利贷"},
-  {en: "Loitering", zh: "游荡"},
-  {en: "Long-arm statute", zh: "长臂法规"},
-  {en: "Lord Chancellor", zh: "大法官"},
-  {en: "Lottery", zh: "彩票"},
-  {en: "Loyalty", zh: "忠诚"},
-  {en: "Lump sum", zh: "一次性付款"},
-  {en: "Magistrate", zh: "治安法官"},
-  {en: "Mail fraud", zh: "邮件欺诈"},
-  {en: "Main motion", zh: "主要动议"},
-  {en: "Maintenance", zh: "维持"},
-  {en: "Malice", zh: "恶意"},
-  {en: "Malicious", zh: "恶意的"},
-  {en: "Malicious prosecution", zh: "恶意起诉"},
-  {en: "Malpractice", zh: "渎职"},
-  {en: "Mandamus", zh: "履行令"},
-  {en: "Mandatory", zh: "强制性的"},
-  {en: "Manslaughter", zh: "过失杀人"},
-  {en: "Manual", zh: "手册"},
-  {en: "Marital", zh: "婚姻的"},
-  {en: "Maritime law", zh: "海商法"},
-  {en: "Marketable", zh: "可销售的"},
-  {en: "Marriage", zh: "婚姻"},
-  {en: "Material", zh: "重要的"},
-  {en: "Material fact", zh: "重要事实"},
-  {en: "Matter", zh: "事项"},
-  {en: "Maxim", zh: "格言"},
-  {en: "Mechanic's lien", zh: "技工留置权"},
-  {en: "Mediation", zh: "调解"},
-  {en: "Medical malpractice", zh: "医疗事故"},
-  {en: "Mens rea", zh: "犯罪意图"},
-  {en: "Mental illness", zh: "精神疾病"},
-  {en: "Mercantile", zh: "商业的"},
-  {en: "Merger", zh: "合并"},
-  {en: "Misdemeanor", zh: "轻罪"},
-  {en: "Misfeasance", zh: "不当履行"},
-  {en: "Misrepresentation", zh: "虚假陈述"},
-  {en: "Mistrial", zh: "无效审判"},
-  {en: "Mitigating circumstance", zh: "减轻情节"},
-  {en: "Mock trial", zh: "模拟审判"},
-  {en: "Moot", zh: "假设的"},
-  {en: "Moral certainty", zh: "内心确信"},
-  {en: "Morality", zh: "道德"},
-  {en: "Motion", zh: "动议"},
-  {en: "Motion denied", zh: "动议被驳回"},
-  {en: "Motion granted", zh: "动议被批准"},
-  {en: "Murder", zh: "谋杀"},
-  {en: "Municipal", zh: "市政的"},
-  {en: "Municipal court", zh: "市法院"},
-  {en: "Mutiny", zh: "兵变"},
-  {en: "Mutual", zh: "相互的"},
-  {en: "Narcotics", zh: "毒品"},
-  {en: "Nationality", zh: "国籍"},
-  {en: "Naturalization", zh: "归化"},
-  {en: "Negotiable", zh: "可流通的"},
-  {en: "Negotiable instrument", zh: "流通票据"},
-  {en: "Negotiate", zh: "谈判"},
-  {en: "Negligence per se", zh: "推定的过失"},
-  {en: "Negligent homicide", zh: "过失杀人"},
-  {en: "Nepotism", zh: "裙带关系"},
-  {en: "Nervousness", zh: "紧张"},
-  {en: "Nolo contendere", zh: "不抗辩"},
-  {en: "Non compos mentis", zh: "精神失常"},
-  {en: "Nonfeasance", zh: "不履行义务"},
-  {en: "Notary", zh: "公证人"},
-  {en: "Not guilty", zh: "无罪"},
-  {en: "Notice", zh: "通知"},
-  {en: "Novation", zh: "债务更新"},
-  {en: "Nuisance", zh: "侵扰"},
-  {en: "Nullity", zh: "无效"},
-  {en: "Oath", zh: "宣誓"},
-  {en: "Objection", zh: "异议"},
-  {en: "Obligation", zh: "义务"},
-  {en: "Obscene", zh: "淫秽的"},
-  {en: "Obscenity", zh: "淫秽"},
-  {en: "Obstruction", zh: "妨碍"},
-  {en: "Obstruction of justice", zh: "妨害司法"},
-  {en: "Occupancy", zh: "占有"},
-  {en: "Offense", zh: "犯罪"},
-  {en: "Offer", zh: "要约"},
-  {en: "Officer", zh: "官员"},
-  {en: "Official", zh: "官方的"},
-  {en: "Official misconduct", zh: "官员渎职"},
-  {en: "Oil and gas law", zh: "油气法"},
-  {en: "Omission", zh: "遗漏"},
-  {en: "On the record", zh: "记录在案"},
-  {en: "Open court", zh: "公开法庭"},
-  {en: "Opening statement", zh: "开庭陈述"},
-  {en: "Opinion", zh: "意见"},
-  {en: "Oppose", zh: "反对"},
-  {en: "Option", zh: "选择权"},
-  {en: "Oral argument", zh: "口头辩论"},
-  {en: "Order", zh: "命令"},
-  {en: "Ordinance", zh: "条例"},
-  {en: "Organized crime", zh: "有组织犯罪"},
-  {en: "Original jurisdiction", zh: "原始管辖权"},
-  {en: "Ostensible authority", zh: "表面授权"},
-  {en: "Outlaw", zh: "不法之徒"},
-  {en: "Overrule", zh: "驳回"},
-  {en: "Overt act", zh: "公开行为"},
-  {en: "Ownership", zh: "所有权"},
-  {en: "Pardon", zh: "赦免"},
-  {en: "Parens patriae", zh: "国家亲权"},
-  {en: "Parental rights", zh: "父母权利"},
-  {en: "Parenting plan", zh: "育儿计划"},
-  {en: "Pari passu", zh: "同等地位"},
-  {en: "Parliament", zh: "议会"},
-  {en: "Parole", zh: "假释"},
-  {en: "Partition", zh: "分割"},
-  {en: "Partnership", zh: "合伙"},
-  {en: "Party", zh: "当事人"},
-  {en: "Patent", zh: "专利"},
-  {en: "Pay", zh: "支付"},
-  {en: "Penalty", zh: "处罚"},
-  {en: "Pendente lite", zh: "诉讼期间"},
-  {en: "Perjury", zh: "伪证"},
-  {en: "Permit", zh: "许可"},
-  {en: "Personal injury", zh: "人身伤害"},
-  {en: "Petition", zh: "请愿"},
-  {en: "Plaintiff", zh: "原告"},
-  {en: "Plea", zh: "答辩"},
-  {en: "Plead", zh: "答辩"},
-  {en: "Pledges", zh: "质押"},
-  {en: "Police", zh: "警察"},
-  {en: "Policy", zh: "政策"},
-  {en: "Power of attorney", zh: "授权委托书"},
-  {en: "Precedent", zh: "判例"},
-  {en: "Precious", zh: "珍贵的"},
-  {en: "Preclude", zh: "排除"},
-  {en: "Predecessor", zh: "前任"},
-  {en: "Preferential", zh: "优先的"},
-  {en: "Prejudice", zh: "偏见"},
-  {en: "Preliminary", zh: "初步的"},
-  {en: "Premises", zh: "房屋"},
-  {en: "Premium", zh: "保险费"},
-  {en: "Prepayment", zh: "预付款"},
-  {en: "Prescribe", zh: "规定"},
-  {en: "Prescription", zh: "时效"},
-  {en: "Present", zh: "现在的"},
-  {en: "Presentment", zh: "提示"},
-  {en: "President", zh: "总统"},
-  {en: "Press", zh: "press新闻"},
-  {en: "Presume", zh: "假定"},
-  {en: "Presumption", zh: "推定"},
-  {en: "Prevent", zh: "预防"},
-  {en: "Previous", zh: "之前的"},
-  {en: "Price", zh: "价格"},
-  {en: "Primary", zh: "主要的"},
-  {en: "Principal", zh: "本金"},
-  {en: "Principle", zh: "原则"},
-  {en: "Prior", zh: "之前的"},
-  {en: "Priority", zh: "优先权"},
-  {en: "Privacy", zh: "隐私"},
-  {en: "Private", zh: "私人的"},
+  {en: "Libel", zh: "文字诽谤"},
+  {en: "Slander", zh: "口头诽谤"},
+  {en: "Justification", zh: "正当理由"},
   {en: "Privilege", zh: "特权"},
-  {en: "Privileged", zh: "受保护的"},
-  {en: "Privy", zh: "当事人"},
-  {en: "Probate", zh: "遗嘱认证"},
-  {en: "Proceed", zh: "进行"},
-  {en: "Proceeds", zh: "收益"},
-  {en: "Process", zh: "程序"},
-  {en: "Procure", zh: "取得"},
-  {en: "Produce", zh: "生产"},
-  {en: "Product", zh: "产品"},
-  {en: "Professional", zh: "专业的"},
-  {en: "Profit", zh: "利润"},
-  {en: "Prohibit", zh: "禁止"},
-  {en: "Project", zh: "项目"},
-  {en: "Promise", zh: "允诺"},
-  {en: "Promissory", zh: "允诺的"},
-  {en: "Promote", zh: "促进"},
-  {en: "Proof", zh: "证据"},
-  {en: "Property", zh: "财产"},
-  {en: "Propose", zh: "提议"},
-  {en: "Prosecute", zh: "起诉"},
-  {en: "Prosecutor", zh: "检察官"},
-  {en: "Prospect", zh: "前景"},
-  {en: "Protect", zh: "保护"},
-  {en: "Protest", zh: "抗议"},
-  {en: "Protocol", zh: "议定书"},
-  {en: "Provide", zh: "提供"},
-  {en: "Provided", zh: "规定"},
-  {en: "Provider", zh: "提供者"},
-  {en: "Proxy", zh: "代理人"},
-  {en: "Public", zh: "公共的"},
-  {en: "Publication", zh: "发表"},
-  {en: "Publish", zh: "出版"},
-  {en: "Punish", zh: "惩罚"},
-  {en: "Punitive", zh: "惩罚性的"},
-  {en: "Purchase", zh: "购买"},
-  {en: "Purport", zh: "意图"},
-  {en: "Pursue", zh: "追求"},
-  {en: "Qualify", zh: "取得资格"},
-  {en: "Qualified", zh: "合格的"},
-  {en: "Quality", zh: "质量"},
-  {en: "Quantum", zh: "数量"},
-  {en: "Quarter", zh: "季度"},
-  {en: "Quasi", zh: "准"},
-  {en: "Query", zh: "询问"},
-  {en: "Quest", zh: "寻求"},
-  {en: "Question", zh: "问题"},
-  {en: "Queue", zh: "排队"},
-  {en: "Quit", zh: "退出"},
-  {en: "Quorum", zh: "法定人数"},
-  {en: "Quote", zh: "报价"},
-  {en: "Raise", zh: "提出"},
-  {en: "Random", zh: "随机的"},
-  {en: "Range", zh: "范围"},
-  {en: "Rate", zh: "比率"},
-  {en: "Rating", zh: "评级"},
-  {en: "Ratio", zh: "比例"},
-  {en: "Rationale", zh: "理由"},
-  {en: "Reach", zh: "达成"},
-  {en: "React", zh: "反应"},
-  {en: "Ready", zh: "准备好的"},
-  {en: "Real", zh: "真实的"},
-  {en: "Reality", zh: "现实"},
-  {en: "Realize", zh: "实现"},
-  {en: "Reasonable", zh: "合理的"},
-  {en: "Reasonably", zh: "合理地"},
-  {en: "Recall", zh: "召回"},
-  {en: "Receive", zh: "接收"},
-  {en: "Recent", zh: "最近的"},
-  {en: "Recently", zh: "最近"},
-  {en: "Reception", zh: "接待"},
-  {en: "Recipe", zh: "食谱"},
-  {en: "Recipient", zh: "接受者"},
-  {en: "Reciprocal", zh: "互惠的"},
-  {en: "Reckless", zh: "鲁莽的"},
-  {en: "Recklessness", zh: "鲁莽"},
-  {en: "Recognition", zh: "认可"},
-  {en: "Recognize", zh: "认可"},
-  {en: "Recommend", zh: "推荐"},
-  {en: "Recommendation", zh: "推荐"},
-  {en: "Record", zh: "记录"},
-  {en: "Recover", zh: "恢复"},
-  {en: "Recovery", zh: "恢复"},
-  {en: "Redress", zh: "补救"},
-  {en: "Reduce", zh: "减少"},
-  {en: "Reduction", zh: "减少"},
-  {en: "Refer", zh: "参考"},
-  {en: "Reference", zh: "参考"},
-  {en: "Reform", zh: "改革"},
-  {en: "Refuge", zh: "避难"},
-  {en: "Refund", zh: "退款"},
-  {en: "Refusal", zh: "拒绝"},
-  {en: "Refuse", zh: "拒绝"},
-  {en: "Regard", zh: "关于"},
-  {en: "Regime", zh: "制度"},
-  {en: "Region", zh: "地区"},
-  {en: "Regional", zh: "地区的"},
-  {en: "Register", zh: "登记"},
-  {en: "Registered", zh: "已登记"},
-  {en: "Registrar", zh: "登记官"},
-  {en: "Registration", zh: "登记"},
-  {en: "Regret", zh: "后悔"},
-  {en: "Regulate", zh: "规范"},
-  {en: "Regulation", zh: "法规"},
-  {en: "Regulator", zh: "监管机构"},
-  {en: "Reinstate", zh: "恢复"},
-  {en: "Reject", zh: "拒绝"},
-  {en: "Rejection", zh: "拒绝"},
-  {en: "Relate", zh: "涉及"},
-  {en: "Related", zh: "相关的"},
-  {en: "Relation", zh: "关系"},
-  {en: "Relationship", zh: "关系"},
-  {en: "Relative", zh: "亲属"},
-  {en: "Release", zh: "释放"},
-  {en: "Released", zh: "已发布"},
-  {en: "Relevance", zh: "相关性"},
-  {en: "Relevant", zh: "相关的"},
-  {en: "Reliance", zh: "依赖"},
-  {en: "Relief", zh: "救济"},
-  {en: "Religion", zh: "宗教"},
-  {en: "Religious", zh: "宗教的"},
-  {en: "Relinquish", zh: "放弃"},
-  {en: "Rely", zh: "依赖"},
-  {en: "Remain", zh: "保持"},
-  {en: "Remainder", zh: "剩余"},
-  {en: "Remedy", zh: "救济"},
-  {en: "Remember", zh: "记得"},
-  {en: "Remind", zh: "提醒"},
-  {en: "Remission", zh: "免除"},
-  {en: "Remit", zh: "汇出"},
-  {en: "Remittance", zh: "汇款"},
-  {en: "Remedy", zh: "救济"},
-  {en: "Render", zh: "提供"},
-  {en: "Renew", zh: "续期"},
-  {en: "Renewal", zh: "续期"},
-  {en: "Rent", zh: "租金"},
-  {en: "Rental", zh: "租赁"},
-  {en: "Repair", zh: "修理"},
-  {en: "Repeal", zh: "废除"},
-  {en: "Repeat", zh: "重复"},
-  {en: "Repeatedly", zh: "重复地"},
-  {en: "Replace", zh: "替换"},
-  {en: "Report", zh: "报告"},
-  {en: "Represent", zh: "代表"},
-  {en: "Representation", zh: "代表"},
-  {en: "Representative", zh: "代表"},
-  {en: "Repress", zh: "镇压"},
-  {en: "Reproduce", zh: "复制"},
-  {en: "Republic", zh: "共和国"},
-  {en: "Republican", zh: "共和党的"},
-  {en: "Repudiate", zh: "拒绝"},
-  {en: "Repudiate", zh: "否认"},
-  {en: "Rescind", zh: "撤销"},
-  {en: "Rescission", zh: "撤销"},
-  {en: "Rescue", zh: "救援"},
-  {en: "Research", zh: "研究"},
-  {en: "Reside", zh: "居住"},
-  {en: "Residence", zh: "住所"},
-  {en: "Residency", zh: "居住"},
-  {en: "Resident", zh: "居民"},
-  {en: "Residential", zh: "住宅的"},
-  {en: "Resign", zh: "辞职"},
-  {en: "Resignation", zh: "辞职"},
-  {en: "Resilience", zh: "韧性"},
-  {en: "Resist", zh: "抵抗"},
-  {en: "Resolve", zh: "解决"},
-  {en: "Resolved", zh: "已解决"},
-  {en: "Resort", zh: "诉诸"},
-  {en: "Resource", zh: "资源"},
-  {en: "Respect", zh: "尊重"},
-  {en: "Respectively", zh: "分别地"},
-  {en: "Respond", zh: "回应"},
-  {en: "Response", zh: "回应"},
-  {en: "Responsibility", zh: "责任"},
-  {en: "Responsible", zh: "负责的"},
-  {en: "Rest", zh: "休息"},
-  {en: "Restore", zh: "恢复"},
-  {en: "Restrain", zh: "限制"},
-  {en: "Restraint", zh: "限制"},
-  {en: "Restrict", zh: "限制"},
-  {en: "Restriction", zh: "限制"},
-  {en: "Result", zh: "结果"},
-  {en: "Resume", zh: "恢复"},
-  {en: "Retail", zh: "零售"},
-  {en: "Retain", zh: "保留"},
-  {en: "Retaliation", zh: "报复"},
-  {en: "Retire", zh: "退休"},
-  {en: "Retirement", zh: "退休"},
-  {en: "Retreat", zh: "撤退"},
-  {en: "Return", zh: "返回"},
-  {en: "Returns", zh: "回报"},
-  {en: "Reveal", zh: "揭示"},
-  {en: "Revenue", zh: "收入"},
-  {en: "Reverse", zh: "反转"},
-  {en: "Review", zh: "审查"},
-  {en: "Revise", zh: "修改"},
-  {en: "Revision", zh: "修改"},
-  {en: "Revival", zh: "复活"},
-  {en: "Revoke", zh: "撤销"},
-  {en: "Revolution", zh: "革命"},
-  {en: "Reward", zh: "奖励"},
-  {en: "Rich", zh: "富有的"},
-  {en: "Ridiculous", zh: "荒谬的"},
-  {en: "Right", zh: "权利"},
-  {en: "Rights", zh: "权利"},
-  {en: "Rigid", zh: "僵硬的"},
-  {en: "Rigor", zh: "严格"},
-  {en: "Rigorous", zh: "严格的"},
-  {en: "Ring", zh: "铃声"},
-  {en: "Riot", zh: "暴乱"},
-  {en: "Risk", zh: "风险"},
-  {en: "Risky", zh: "有风险的"},
-  {en: "Ritual", zh: "仪式"},
-  {en: "Rival", zh: "竞争对手"},
-  {en: "River", zh: "河流"},
-  {en: "Road", zh: "道路"},
-  {en: "Rob", zh: "抢劫"},
-  {en: "Robbery", zh: "抢劫"},
-  {en: "Role", zh: "角色"},
-  {en: "Roll", zh: "滚动"},
-  {en: "Roof", zh: "屋顶"},
-  {en: "Room", zh: "房间"},
-  {en: "Root", zh: "根源"},
-  {en: "Rough", zh: "粗糙的"},
-  {en: "Round", zh: "回合"},
-  {en: "Route", zh: "路线"},
-  {en: "Routine", zh: "常规"},
-  {en: "Row", zh: "行"},
-  {en: "Royal", zh: "皇家的"},
-  {en: "Rub", zh: "摩擦"},
-  {en: "Rude", zh: "粗鲁的"},
-  {en: "Rug", zh: "地毯"},
-  {en: "Rule", zh: "规则"},
-  {en: "Ruling", zh: "裁定"},
-  {en: "Run", zh: "运行"},
-  {en: "Rural", zh: "农村的"},
-  {en: "Rush", zh: "冲"},
-  {en: "Ruthless", zh: "无情的"},
-  {en: "Sabotage", zh: "破坏"},
-  {en: "Sacrifice", zh: "牺牲"},
-  {en: "Sad", zh: "悲伤的"},
-  {en: "Sadden", zh: "使悲伤"},
-  {en: "Safe", zh: "安全的"},
-  {en: "Safeguard", zh: "保护"},
-  {en: "Safety", zh: "安全"},
-  {en: "Said", zh: "上述的"},
-  {en: "Sail", zh: "航行"},
-  {en: "Sake", zh: "为了"},
-  {en: "Salary", zh: "工资"},
-  {en: "Sale", zh: "销售"},
-  {en: "Sales", zh: "销售"},
-  {en: "Same", zh: "相同的"},
-  {en: "Sample", zh: "样本"},
-  {en: "Sanction", zh: "制裁"},
-  {en: "Sanctions", zh: "制裁"},
-  {en: "Sand", zh: "沙子"},
-  {en: "Sane", zh: "心智健全的"},
-  {en: "Satisfaction", zh: "满意"},
-  {en: "Satisfactory", zh: "令人满意的"},
-  {en: "Satisfy", zh: "满足"},
-  {en: "Save", zh: "拯救"},
-  {en: "Saving", zh: "储蓄"},
-  {en: "Say", zh: "说"},
-  {en: "Scale", zh: "规模"},
-  {en: "Scandal", zh: "丑闻"},
-  {en: "Scare", zh: "惊吓"},
-  {en: "Scared", zh: "害怕的"},
-  {en: "Scheme", zh: "计划"},
-  {en: "Scholar", zh: "学者"},
-  {en: "Scholarship", zh: "奖学金"},
-  {en: "School", zh: "学校"},
-  {en: "Science", zh: "科学"},
-  {en: "Scientific", zh: "科学的"},
-  {en: "Scope", zh: "范围"},
-  {en: "Score", zh: "分数"},
-  {en: "Scorn", zh: "轻蔑"},
-  {en: "Scrutinize", zh: "仔细检查"},
-  {en: "Sea", zh: "海"},
-  {en: "Seal", zh: "封印"},
-  {en: "Sealed", zh: "密封的"},
-  {en: "Search", zh: "搜索"},
-  {en: "Season", zh: "季节"},
-  {en: "Seasonal", zh: "季节性的"},
-  {en: "Seat", zh: "座位"},
-  {en: "Second", zh: "第二"},
-  {en: "Secondary", zh: "次要的"},
-  {en: "Secret", zh: "秘密"},
-  {en: "Secretary", zh: "秘书"},
-  {en: "Section", zh: "部分"},
-  {en: "Sector", zh: "部门"},
-  {en: "Secure", zh: "安全的"},
-  {en: "Security", zh: "安全"},
-  {en: "See", zh: "看见"},
-  {en: "Seed", zh: "种子"},
-  {en: "Seek", zh: "寻求"},
-  {en: "Seem", zh: "似乎"},
-  {en: "Seize", zh: "抓住"},
-  {en: "Seizure", zh: " seizure扣押"},
-  {en: "Seldom", zh: "很少"},
-  {en: "Select", zh: "选择"},
-  {en: "Selected", zh: "被选中的"},
-  {en: "Selection", zh: "选择"},
-  {en: "Self", zh: "自己"},
-  {en: "Sell", zh: "卖"},
-  {en: "Seller", zh: "卖方"},
-  {en: "Senate", zh: "参议院"},
-  {en: "Senator", zh: "参议员"},
-  {en: "Send", zh: "发送"},
-  {en: "Senior", zh: "高级的"},
-  {en: "Sensation", zh: "感觉"},
-  {en: "Sense", zh: "感觉"},
-  {en: "Sensitive", zh: "敏感的"},
-  {en: "Sent", zh: "发送的"},
-  {en: "Sentence", zh: "判决"},
-  {en: "Sentiment", zh: "情绪"},
-  {en: "Separate", zh: "分开的"},
-  {en: "Separately", zh: "分别地"},
-  {en: "Separation", zh: "分离"},
-  {en: "Sequence", zh: "顺序"},
-  {en: "Sequester", zh: "隔离"},
-  {en: "Series", zh: "系列"},
-  {en: "Serious", zh: "严重的"},
-  {en: "Seriously", zh: "认真地"},
-  {en: "Servant", zh: "仆人"},
-  {en: "Serve", zh: "服务"},
-  {en: "Server", zh: "服务器"},
-  {en: "Service", zh: "服务"},
-  {en: "Services", zh: "服务"},
-  {en: "Set", zh: "设定"},
-  {en: "Set aside", zh: "撤销"},
-  {en: "Setting", zh: "设置"},
-  {en: "Settle", zh: "解决"},
-  {en: "Settlement", zh: "和解"},
-  {en: "Sever", zh: "切断"},
-  {en: "Several", zh: "几个"},
-  {en: "Severance", zh: " severance离职费"},
-  {en: "Severe", zh: "严重的"},
-  {en: "Severity", zh: "严重性"},
-  {en: "Sex", zh: "性别"},
-  {en: "Sexual", zh: "性的"},
-  {en: "Sexually", zh: "性地"},
-  {en: "Shade", zh: "阴影"},
-  {en: "Shadow", zh: "影子"},
-  {en: "Shake", zh: "摇动"},
-  {en: "Shall", zh: "将"},
-  {en: "Shallow", zh: "浅的"},
-  {en: "Shame", zh: "羞耻"},
-  {en: "Shape", zh: "形状"},
-  {en: "Share", zh: "分享"},
-  {en: "Shareholder", zh: "股东"},
-  {en: "Shares", zh: "股份"},
-  {en: "Sharp", zh: "尖锐的"},
-  {en: "Shatter", zh: "粉碎"},
-  {en: "She", zh: "她"},
-  {en: "Shelter", zh: "庇护"},
-  {en: "Shift", zh: "转移"},
-  {en: "Ship", zh: "船"},
-  {en: "Shipment", zh: " shipment装运"},
-  {en: "Shipper", zh: "发货人"},
-  {en: "Shipping", zh: "航运"},
-  {en: "Shock", zh: "冲击"},
-  {en: "Shoe", zh: "鞋"},
-  {en: "Shoot", zh: "射击"},
-  {en: "Shooting", zh: "射击"},
-  {en: "Shop", zh: "商店"},
-  {en: "Shopping", zh: "购物"},
-  {en: "Short", zh: "短的"},
-  {en: "Shortage", zh: "短缺"},
-  {en: "Shortly", zh: "不久"},
-  {en: "Shot", zh: " shot枪击"},
-  {en: "Should", zh: "应该"},
-  {en: "Shoulder", zh: "肩"},
-  {en: "Show", zh: "显示"},
-  {en: "Shower", zh: "阵雨"},
-  {en: "Showroom", zh: "展示厅"},
-  {en: "Shrink", zh: "收缩"},
-  {en: "Shrug", zh: "耸肩"},
-  {en: "Shut", zh: "关闭"},
-  {en: "Shy", zh: "害羞的"},
-  {en: "Sick", zh: "生病的"},
-  {en: "Sickness", zh: "疾病"},
-  {en: "Side", zh: "方面"},
-  {en: "Sight", zh: "视线"},
-  {en: "Sign", zh: "签名"},
-  {en: "Signal", zh: "信号"},
-  {en: "Signature", zh: "签名"},
-  {en: "Signatory", zh: "签署方"},
-  {en: "Significance", zh: "意义"},
-  {en: "Significant", zh: "重要的"},
-  {en: "Signify", zh: "表示"},
-  {en: "Silence", zh: "沉默"},
-  {en: "Silent", zh: "沉默的"},
-  {en: "Silly", zh: "愚蠢的"},
-  {en: "Similar", zh: "相似的"},
-  {en: "Similarly", zh: "类似地"},
-  {en: "Simple", zh: "简单的"},
-  {en: "Simplify", zh: "简化"},
-  {en: "Simply", zh: "简单地"},
-  {en: "Simulate", zh: "模拟"},
-  {en: "Simultaneous", zh: "同时的"},
-  {en: "Simultaneously", zh: "同时地"},
-  {en: "Sin", zh: "罪恶"},
-  {en: "Since", zh: "自从"},
-  {en: "Sincere", zh: "真诚的"},
-  {en: "Sincerely", zh: "真诚地"},
-  {en: "Sing", zh: "唱"},
-  {en: "Singer", zh: "歌手"},
-  {en: "Single", zh: "单个的"},
-  {en: "Sink", zh: "下沉"},
-  {en: "Sir", zh: "先生"},
-  {en: "Sister", zh: "姐妹"},
-  {en: "Sit", zh: "坐"},
-  {en: "Site", zh: "地点"},
-  {en: "Situate", zh: "位于"},
-  {en: "Situation", zh: "情况"},
-  {en: "Size", zh: "大小"},
-  {en: "Skate", zh: "滑冰"},
-  {en: "Skill", zh: "技能"},
-  {en: "Skilled", zh: "熟练的"},
-  {en: "Skin", zh: "皮肤"},
-  {en: "Skip", zh: "跳过"},
-  {en: "Skirt", zh: "裙子"},
-  {en: "Sky", zh: "天空"},
-  {en: "Slam", zh: " slam猛击"},
-  {en: "Slap", zh: " slap掌掴"},
-  {en: "Slave", zh: "奴隶"},
-  {en: "Slavery", zh: "奴隶制"},
-  {en: "Sleep", zh: "睡眠"},
-  {en: "Slice", zh: "切片"},
-  {en: "Slide", zh: "滑动"},
-  {en: "Slight", zh: "轻微的"},
-  {en: "Slightly", zh: "稍微"},
-  {en: "Slim", zh: "苗条的"},
-  {en: "Slip", zh: "滑倒"},
-  {en: "Slippery", zh: "滑的"},
-  {en: "Slope", zh: "斜坡"},
-  {en: "Slow", zh: "慢的"},
-  {en: "Slowly", zh: "慢慢地"},
-  {en: "Slump", zh: "slump暴跌"},
-  {en: "Small", zh: "小的"},
-  {en: "Smart", zh: "聪明的"},
-  {en: "Smash", zh: "粉碎"},
-  {en: "Smell", zh: "气味"},
-  {en: "Smile", zh: "微笑"},
-  {en: "Smoke", zh: "吸烟"},
-  {en: "Smooth", zh: "光滑的"},
-  {en: "Snap", zh: "snap突然断裂"},
-  {en: "Snow", zh: "雪"},
-  {en: "So", zh: "所以"},
-  {en: "Soak", zh: "浸泡"},
-  {en: "Soap", zh: "肥皂"},
-  {en: "Sober", zh: "清醒的"},
-  {en: "Social", zh: "社会的"},
-  {en: "Society", zh: "社会"},
-  {en: "Soft", zh: "柔软的"},
-  {en: "Software", zh: "软件"},
-  {en: "Soil", zh: "土壤"},
-  {en: "Solar", zh: "太阳的"},
-  {en: "Sold", zh: "卖出的"},
-  {en: "Soldier", zh: "士兵"},
-  {en: "Sole", zh: "唯一的"},
-  {en: "Solely", zh: "仅"},
-  {en: "Solid", zh: "固体的"},
-  {en: "Solution", zh: "解决方案"},
-  {en: "Solve", zh: "解决"},
-  {en: "Some", zh: "一些"},
-  {en: "Somebody", zh: "某人"},
-  {en: "Someone", zh: "某人"},
-  {en: "Something", zh: "某事"},
-  {en: "Sometimes", zh: "有时"},
-  {en: "Somewhat", zh: "有点"},
-  {en: "Somewhere", zh: "某处"},
-  {en: "Son", zh: "儿子"},
-  {en: "Song", zh: "歌曲"},
-  {en: "Soon", zh: "不久"},
-  {en: "Soon after", zh: "之后不久"},
-  {en: "Soothe", zh: "安慰"},
-  {en: "Sophisticated", zh: "复杂的"},
-  {en: "Sore", zh: "疼痛的"},
-  {en: "Sorrow", zh: "悲伤"},
-  {en: "Sorry", zh: "抱歉的"},
-  {en: "Sort", zh: "种类"},
-  {en: "Sought", zh: " sought寻求"},
-  {en: "Soul", zh: "灵魂"},
-  {en: "Sound", zh: "声音"},
-  {en: "Sounds", zh: "听起来"},
-  {en: "Source", zh: "来源"},
-  {en: "South", zh: "南方"},
-  {en: "Southern", zh: "南方的"},
-  {en: "Sovereign", zh: "主权"},
-  {en: "Sovereignty", zh: "主权"},
-  {en: "Space", zh: "空间"},
-  {en: "Spare", zh: "多余的"},
-  {en: "Spark", zh: "引发"},
-  {en: "Speak", zh: "说话"},
-  {en: "Speaker", zh: " speaker演讲者"},
-  {en: "Special", zh: "特别的"},
-  {en: "Specialist", zh: "专家"},
-  {en: "Specialize", zh: "专门从事"},
-  {en: "Specific", zh: "具体的"},
-  {en: "Specifically", zh: "特别地"},
-  {en: "Specification", zh: "规格"},
-  {en: "Specify", zh: "指定"},
-  {en: "Spectacular", zh: "壮观的"},
-  {en: "Spectrum", zh: " spectrum范围"},
-  {en: "Speculate", zh: " speculation投机"},
-  {en: "Speech", zh: "演讲"},
-  {en: "Speed", zh: "速度"},
-  {en: "Speedy", zh: "迅速的"},
-  {en: "Spell", zh: "拼写"},
-  {en: "Spend", zh: "花费"},
-  {en: "Spent", zh: "spent花费的"},
-  {en: "Sphere", zh: "范围"},
-  {en: "Spill", zh: "溢出"},
-  {en: "Spin", zh: "旋转"},
-  {en: "Spirit", zh: "精神"},
-  {en: "Spirited", zh: "精神饱满的"},
-  {en: "Spite", zh: "尽管"},
-  {en: "Splash", zh: "溅"},
-  {en: "Splendid", zh: "灿烂的"},
-  {en: "Split", zh: "分裂"},
-  {en: "Spoil", zh: "宠坏"},
-  {en: "Spoke", zh: " spoke说过"},
-  {en: "Spontaneous", zh: "自发的"},
-  {en: "Sport", zh: "运动"},
-  {en: "Sports", zh: "运动"},
-  {en: "Spot", zh: "地点"},
-  {en: "Spotlight", zh: " spotlight聚光灯"},
-  {en: "Spouse", zh: "配偶"},
-  {en: "Spread", zh: "传播"},
-  {en: "Spring", zh: "春天"},
-  {en: "Spy", zh: "间谍"},
-  {en: "Squad", zh: " squad小队"},
-  {en: "Square", zh: "广场"},
-  {en: "Squeeze", zh: "挤压"},
-  {en: "Stability", zh: "稳定"},
-  {en: "Stable", zh: "稳定的"},
-  {en: "Stack", zh: "堆"},
-  {en: "Staff", zh: "员工"},
-  {en: "Stage", zh: "阶段"},
-  {en: "Stain", zh: "污点"},
-  {en: "Stair", zh: "楼梯"},
-  {en: "Stake", zh: " stake利害关系"},
-  {en: "Stakeholder", zh: "利益相关者"},
-  {en: "Stale", zh: "不新鲜的"},
-  {en: "Stamp", zh: "邮票"},
-  {en: "Stand", zh: "站立"},
-  {en: "Standard", zh: "标准"},
-  {en: "Standing", zh: " standing地位"},
-  {en: "Standstill", zh: "停滞"},
-  {en: "Star", zh: "星星"},
-  {en: "Stare", zh: "凝视"},
-  {en: "Start", zh: "开始"},
-  {en: "Startling", zh: "令人震惊的"},
-  {en: "State", zh: "国家"},
-  {en: "Statement", zh: "声明"},
-  {en: "Station", zh: "车站"},
-  {en: "Statistical", zh: "统计的"},
-  {en: "Statistics", zh: "统计"},
-  {en: "Status", zh: "地位"},
-  {en: "Statute", zh: "法规"},
-  {en: "Statutory", zh: "法定的"},
-  {en: "Stay", zh: "停留"},
-  {en: "Steady", zh: "稳定的"},
-  {en: "Steal", zh: "偷"},
-  {en: "Stealth", zh: " stealth秘密行动"},
-  {en: "Steam", zh: "蒸汽"},
-  {en: "Steel", zh: "钢"},
-  {en: "Steep", zh: "陡峭的"},
-  {en: "Steer", zh: "驾驶"},
-  {en: "Stem", zh: "stem来自"},
-  {en: "Step", zh: "步骤"},
-  {en: "Step by step", zh: "逐步地"},
-  {en: "Stereotype", zh: "刻板印象"},
-  {en: "Stick", zh: " stick坚持"},
-  {en: "Sticky", zh: " sticky粘的"},
-  {en: "Stiff", zh: "僵硬的"},
-  {en: "Still", zh: "仍然"},
-  {en: "Stimulate", zh: "刺激"},
-  {en: "Stimulus", zh: "刺激"},
-  {en: "Stock", zh: "股票"},
-  {en: "Stockholder", zh: "股东"},
-  {en: "Stolen", zh: " stolen偷来的"},
-  {en: "Stomach", zh: "胃"},
-  {en: "Stone", zh: "石头"},
-  {en: "Stop", zh: "停止"}
+  {en: "Absolute privilege", zh: "绝对特权"},
+  {en: "Qualified privilege", zh: "附条件特权"},
+  {en: "Trust", zh: "信托"},
+  {en: "Settlor", zh: "委托人"},
+  {en: "Trustee", zh: "受托人"},
+  {en: "Beneficiary", zh: "受益人"},
+  {en: "Resulting trust", zh: "剩余信托"},
+  {en: "Constructive trust", zh: "推定信托"},
+  {en: "Express trust", zh: "明示信托"},
+  {en: "Implied trust", zh: "默示信托"},
+  {en: "Bare trust", zh: "纯粹信托"},
+  {en: "Discretionary trust", zh: "自由裁量信托"},
+  {en: "Fixed trust", zh: "固定信托"},
+  {en: "Land", zh: "土地"},
+  {en: "Fee simple", zh: "自由持有产权"},
+  {en: "Leasehold", zh: "租赁持有产权"},
+  {en: "Freehold", zh: "永久产权"},
+  {en: "Mortgage", zh: "抵押"},
+  {en: "Easement", zh: "地役权"},
+  {en: "Profit", zh: "采集权"},
+  {en: "Covenant", zh: "契约"},
+  {en: "Positive covenant", zh: "积极契约"},
+  {en: "Negative covenant", zh: "消极契约"},
+  {en: "Injunction", zh: "禁令"},
+  {en: "Wills", zh: "遗嘱"},
+  {en: "Testator", zh: "遗嘱人"},
+  {en: "Legacy", zh: "遗赠"},
+  {en: "Devise", zh: "土地遗赠"},
+  {en: "Specific legacy", zh: "特定遗赠"},
+  {en: "General legacy", zh: "一般遗赠"},
+  {en: "Residuary legacy", zh: "剩余遗产遗赠"}
 ];
 
-// 初始化
-function init() {
-  showFlashcard();
-  showQuestions();
-  showVocab();
-}
-
-// 进入应用
-function enterApp() {
-  currentUser = "Guest";
-  document.getElementById('userDisplay').textContent = currentUser;
-  document.getElementById('home').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-}
-
+// 首页功能
 function showLogin() {
-  alert('登录功能：\n\n直接点击"直接进入"即可使用完整功能');
-  enterApp();
+  var user = prompt("请输入用户名:");
+  if (user) {
+    currentUser = user;
+    document.getElementById('userDisplay').textContent = user;
+    enterApp();
+  }
 }
 
 function logout() {
@@ -1731,148 +491,287 @@ function logout() {
   document.getElementById('home').classList.remove('hidden');
 }
 
-// 切换标签
+function enterApp() {
+  document.getElementById('home').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  if (typeof sqeQuestions !== 'undefined') {
+    filterQuestions();
+  }
+}
+
+// 标签切换
 function goTab(tab, btn) {
   currentTab = tab;
-  // 隐藏所有内容
-  document.querySelectorAll('.tab-content').forEach(function(el) {
-    el.classList.add('hidden');
-  });
-  // 显示当前内容
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.getElementById('tab-' + tab).classList.remove('hidden');
-  // 更新按钮状态
-  if (btn) {
-    document.querySelectorAll('.nav .btn').forEach(function(b) {
-      b.classList.remove('active');
-    });
-    btn.classList.add('active');
+  document.querySelectorAll('.nav .btn').forEach(el => el.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  
+  if (tab === 'vocabulary') loadVocab();
+  if (tab === 'flashcards') updateFlashcardUI();
+}
+
+// 加载词汇表
+function loadVocab() {
+  var list = document.getElementById('vocabList');
+  list.innerHTML = '';
+  vocabData.forEach(function(v) {
+    list.innerHTML += '<div class="vocab"><span class="vocab-en">' + v.en + '</span><span class="vocab-zh">' + v.zh + '</span></div>';
+  });
+}
+
+// 搜索词汇
+function searchVocab(keyword) {
+  var list = document.getElementById('vocabList');
+  list.innerHTML = '';
+  vocabData.forEach(function(v) {
+    if (v.en.toLowerCase().indexOf(keyword.toLowerCase()) >= 0 || v.zh.indexOf(keyword) >= 0) {
+      list.innerHTML += '<div class="vocab"><span class="vocab-en">' + v.en + '</span><span class="vocab-zh">' + v.zh + '</span></div>';
+    }
+  });
+}
+
+// 题库练习 - 筛选题目
+function filterQuestions() {
+  var category = document.getElementById('qCategory').value;
+  var list = document.getElementById('questionList');
+  
+  if (typeof sqeQuestions === 'undefined') {
+    list.innerHTML = '<div class="card"><h4>加载中...</h4><p>正在加载题库数据，请稍候。</p></div>';
+    return;
+  }
+  
+  // 筛选题目
+  if (category === 'all') {
+    currentFilteredQuestions = sqeQuestions;
+  } else if (category === 'FLK1') {
+    currentFilteredQuestions = sqeQuestions.filter(function(q) { return q.flk === 'FLK1'; });
+  } else if (category === 'FLK2') {
+    currentFilteredQuestions = sqeQuestions.filter(function(q) { return q.flk === 'FLK2'; });
+  } else {
+    currentFilteredQuestions = sqeQuestions.filter(function(q) { return q.category === category; });
+  }
+  
+  // 更新统计
+  document.getElementById('totalQuestions').textContent = sqeQuestions.length;
+  document.getElementById('filteredCount').textContent = currentFilteredQuestions.length;
+  document.getElementById('questionCountBadge').textContent = '共 ' + currentFilteredQuestions.length + ' 题';
+  
+  // 显示前20题（可滚动加载更多）
+  var displayCount = Math.min(currentFilteredQuestions.length, 20);
+  list.innerHTML = '';
+  
+  for (var i = 0; i < displayCount; i++) {
+    list.innerHTML += renderQuestion(currentFilteredQuestions[i]);
+  }
+  
+  if (currentFilteredQuestions.length > 20) {
+    list.innerHTML += '<div class="card" style="text-align:center;"><p>显示前20题，共 ' + currentFilteredQuestions.length + ' 题</p><p>使用类别筛选缩小范围</p></div>';
+  }
+  
+  if (currentFilteredQuestions.length === 0) {
+    list.innerHTML = '<div class="card"><h4>暂无题目</h4><p>该类别暂无可用题目，请选择其他类别。</p></div>';
+  }
+}
+
+// 渲染单个题目
+function renderQuestion(q) {
+  var html = '<div class="question" id="q-' + q.number + '">';
+  html += '<div class="question-header">';
+  html += '<span class="question-number">第 ' + q.number + ' 题</span>';
+  html += '<span class="question-category">' + getCategoryName(q.category) + '</span>';
+  html += '</div>';
+  html += '<div class="question-stem">' + q.stem + '</div>';
+  html += '<div class="options" id="options-' + q.number + '">';
+  
+  // 渲染选项
+  var opts = q.opts;
+  var optionKeys = ['A', 'B', 'C', 'D', 'E'];
+  for (var i = 0; i < optionKeys.length; i++) {
+    var key = optionKeys[i];
+    if (opts[key]) {
+      html += '<div class="option" data-question="' + q.number + '" data-option="' + key + '" onclick="selectOption(this, ' + q.number + ', \'' + key + '\')">';
+      html += '<span class="option-letter">' + key + '.</span>';
+      html += '<span class="option-text">' + opts[key] + '</span>';
+      html += '</div>';
+    }
+  }
+  
+  html += '</div>';
+  html += '<div class="question-actions">';
+  html += '<button class="btn btn-purple" onclick="checkAnswer(' + q.number + ')">检查答案</button>';
+  html += '<button class="btn btn-white" onclick="showAnswer(' + q.number + ')">显示正确答案</button>';
+  html += '</div>';
+  html += '<div id="feedback-' + q.number + '"></div>';
+  html += '<div id="analysis-' + q.number + '"></div>';
+  html += '</div>';
+  
+  return html;
+}
+
+// 获取类别名称
+function getCategoryName(category) {
+  var names = {
+    'FLK1': 'FLK1',
+    'FLK2': 'FLK2',
+    'contract': '合同法',
+    'tort': '侵权法',
+    'land': '土地法',
+    'trust': '信托法',
+    'wills': '遗嘱法',
+    'criminal': '刑法',
+    'business': '商业法',
+    'constitutional': '宪法',
+    'legal-services': '法律服务',
+    'equity': '衡平法',
+    'accounts': '会计与财务',
+    'civil-procedure': '民事诉讼法',
+    'ethics-and-regulation': '职业操守'
+  };
+  return names[category] || category;
+}
+
+// 选择选项
+function selectOption(element, questionNum, optionKey) {
+  // 移除之前的选中状态
+  var options = document.querySelectorAll('#options-' + questionNum + ' .option');
+  options.forEach(function(opt) {
+    opt.classList.remove('selected');
+  });
+  
+  // 添加选中状态
+  element.classList.add('selected');
+}
+
+// 检查答案
+function checkAnswer(questionNum) {
+  var selectedOption = document.querySelector('#options-' + questionNum + ' .option.selected');
+  var feedbackEl = document.getElementById('feedback-' + questionNum);
+  var analysisEl = document.getElementById('analysis-' + questionNum);
+  
+  if (!selectedOption) {
+    feedbackEl.innerHTML = '<div class="feedback wrong"><span class="feedback-icon">⚠️</span>请先选择一个选项</div>';
+    return;
+  }
+  
+  var selectedKey = selectedOption.getAttribute('data-option');
+  var q = currentFilteredQuestions.find(function(item) { return item.number === questionNum; });
+  
+  if (!q) {
+    q = sqeQuestions.find(function(item) { return item.number === questionNum; });
+  }
+  
+  var isCorrect = selectedKey === q.answer;
+  
+  // 清除之前的样式
+  var options = document.querySelectorAll('#options-' + questionNum + ' .option');
+  options.forEach(function(opt) {
+    opt.classList.remove('correct', 'wrong', 'selected');
+    opt.classList.add('disabled');
+  });
+  
+  // 显示正确和错误状态
+  options.forEach(function(opt) {
+    var key = opt.getAttribute('data-option');
+    if (key === q.answer) {
+      opt.classList.add('correct');
+    } else if (key === selectedKey && !isCorrect) {
+      opt.classList.add('wrong');
+    }
+  });
+  
+  // 显示反馈
+  if (isCorrect) {
+    feedbackEl.innerHTML = '<div class="feedback correct"><span class="feedback-icon">✓</span>回答正确！</div>';
+  } else {
+    feedbackEl.innerHTML = '<div class="feedback wrong"><span class="feedback-icon">✗</span>回答错误！正确答案是: ' + q.answer + '</div>';
+  }
+  
+  // 显示解析
+  if (q.analysis && q.analysis.trim()) {
+    analysisEl.innerHTML = '<div class="analysis"><div class="analysis-header">📖 答案解析<span></span></div>' + q.analysis + '</div>';
+  } else {
+    analysisEl.innerHTML = '<div class="analysis"><div class="analysis-header">📖 答案解析<span></span></div><p>本题暂无详细解析。</p><p><strong>正确答案: ' + q.answer + '</strong></p></div>';
+  }
+}
+
+// 显示正确答案
+function showAnswer(questionNum) {
+  var q = currentFilteredQuestions.find(function(item) { return item.number === questionNum; });
+  
+  if (!q) {
+    q = sqeQuestions.find(function(item) { return item.number === questionNum; });
+  }
+  
+  var feedbackEl = document.getElementById('feedback-' + questionNum);
+  var analysisEl = document.getElementById('analysis-' + questionNum);
+  
+  feedbackEl.innerHTML = '<div class="feedback"><span class="feedback-icon">📌</span>正确答案: <strong>' + q.answer + '</strong></div>';
+  
+  // 显示解析
+  if (q.analysis && q.analysis.trim()) {
+    analysisEl.innerHTML = '<div class="analysis"><div class="analysis-header">📖 答案解析<span></span></div>' + q.analysis + '</div>';
+  } else {
+    analysisEl.innerHTML = '<div class="analysis"><div class="analysis-header">📖 答案解析<span></span></div><p>本题暂无详细解析。</p></div>';
   }
 }
 
 // 记忆卡片功能
-function showFlashcard() {
-  if (flashcardsData.length === 0) return;
-  var card = flashcardsData[flashcardIndex];
-  document.getElementById('questionContent').textContent = card.question;
-  document.getElementById('answerContent').textContent = card.answer;
-  document.getElementById('currentCard').textContent = flashcardIndex + 1;
-  document.getElementById('totalCards').textContent = flashcardsData.length;
-}
-
 function flipCard() {
-  document.getElementById('flashcard').classList.toggle('flipped');
-}
-
-function nextCard() {
-  if (flashcardIndex < flashcardsData.length - 1) {
-    flashcardIndex++;
-    showFlashcard();
-    document.getElementById('flashcard').classList.remove('flipped');
-  }
-}
-
-function prevCard() {
-  if (flashcardIndex > 0) {
-    flashcardIndex--;
-    showFlashcard();
-    document.getElementById('flashcard').classList.remove('flipped');
-  }
+  var card = document.getElementById('flashcard');
+  card.classList.toggle('flipped');
 }
 
 function filterFlashcards() {
-  var category = document.getElementById('fcCategory').value;
-  if (category === 'all') {
-    flashcardsData = [
-      {category: "legacy", question: "什么是 Specific Legacy？", answer: "指定赠与特定物品。"},
-      {category: "legacy", question: "什么是 General Legacy？", answer: "赠与一定金额。"},
-      {category: "failure", question: "什么是 Ademption？", answer: "物品不存在，遗赠失效。"},
-      {category: "business", question: "英国公司类型？", answer: "Sole Trader, Partnership, LLP, Limited, PLC"},
-      {category: "trust", question: "信托三要素？", answer: "意图、标的、对象确定。"},
-      {category: "land", question: "Freehold vs Leasehold？", answer: "永久产权 vs 租赁产权。"},
-      {category: "tort", question: "Negligence三要素？", answer: "注意义务、违反、因果关系。"},
-      {category: "contract", question: "合同三要素？", answer: "要约、承诺、对价。"}
-    ];
-  } else {
-    flashcardsData = flashcardsData.filter(function(c) { return c.category === category; });
+  // 更新显示
+  updateFlashcardUI();
+}
+
+function prevCard() {
+  var filtered = getFilteredFlashcards();
+  flashcardIndex = (flashcardIndex - 1 + filtered.length) % filtered.length;
+  updateFlashcardUI();
+}
+
+function nextCard() {
+  var filtered = getFilteredFlashcards();
+  flashcardIndex = (flashcardIndex + 1) % filtered.length;
+  updateFlashcardUI();
+}
+
+function getFilteredFlashcards() {
+  var cat = document.getElementById('fcCategory').value;
+  if (cat === 'all') return flashcardsData;
+  return flashcardsData.filter(function(f) { return f.category === cat; });
+}
+
+function updateFlashcardUI() {
+  var filtered = getFilteredFlashcards();
+  if (filtered.length === 0) {
+    document.getElementById('questionContent').textContent = '该类别暂无卡片';
+    document.getElementById('answerContent').textContent = '-';
+    return;
   }
-  flashcardIndex = 0;
-  showFlashcard();
+  
+  var card = filtered[flashcardIndex];
+  document.getElementById('questionContent').textContent = card.question;
+  document.getElementById('answerContent').textContent = card.answer;
+  document.getElementById('currentCard').textContent = flashcardIndex + 1;
+  document.getElementById('totalCards').textContent = filtered.length;
+  
+  var pct = ((flashcardIndex + 1) / filtered.length) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  
+  // 重置卡片翻转状态
   document.getElementById('flashcard').classList.remove('flipped');
 }
 
-// 题目功能
-function showQuestions() {
-  var list = document.getElementById('questionList');
-  var html = '';
-  questionsData.forEach(function(q) {
-    html += '<div class="question"><h4>' + q.id + '. ' + q.question + '</h4><div class="options">';
-    q.options.forEach(function(opt, i) {
-      html += '<div class="option" onclick="checkAnswer(this, ' + q.correct + ', ' + q.id + ')">' + opt + '</div>';
-    });
-    html += '</div><div class="analysis" style="display:none;"></div></div>';
-  });
-  list.innerHTML = html;
-}
-
-function filterQuestions() {
-  var category = document.getElementById('qCategory').value;
-  var filtered = category === 'all' ? questionsData : questionsData.filter(function(q) { return q.category === category; });
-  var list = document.getElementById('questionList');
-  var html = '';
-  filtered.forEach(function(q) {
-    html += '<div class="question"><h4>' + q.id + '. ' + q.question + '</h4><div class="options">';
-    q.options.forEach(function(opt, i) {
-      html += '<div class="option" onclick="checkAnswer(this, ' + q.correct + ', ' + q.id + ')">' + opt + '</div>';
-    });
-    html += '</div><div class="analysis" style="display:none;"></div></div>';
-  });
-  list.innerHTML = html;
-}
-
-function checkAnswer(el, correct, qId) {
-  var opts = el.parentElement.querySelectorAll('.option');
-  var analysisBox = el.parentElement.parentElement.querySelector('.analysis');
-  opts.forEach(function(o) { o.classList.remove('correct'); o.classList.remove('wrong'); });
-  var idx = Array.from(opts).indexOf(el);
-  if (idx === correct) {
-    el.classList.add('correct');
-  } else {
-    el.classList.add('wrong');
-    opts[correct].classList.add('correct');
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof sqeQuestions !== 'undefined') {
+    filterQuestions();
   }
-  // 显示分析
-  var q = questionsData.find(function(x) { return x.id === qId; });
-  if (q && q.analysis) {
-    analysisBox.innerHTML = q.analysis.replace(/\n/g, '<br>');
-    analysisBox.style.display = 'block';
-  }
-}
-
-// 词汇功能
-function showVocab() {
-  var list = document.getElementById('vocabList');
-  var html = '';
-  vocabData.forEach(function(v) {
-    html += '<div class="vocab"><span class="vocab-en">' + v.en + '</span><span class="vocab-zh">' + v.zh + '</span></div>';
-  });
-  list.innerHTML = html;
-}
-
-function searchVocab(keyword) {
-  var filtered = vocabData.filter(function(v) { 
-    return v.en.toLowerCase().includes(keyword.toLowerCase()) || v.zh.includes(keyword); 
-  });
-  var list = document.getElementById('vocabList');
-  var html = '';
-  filtered.forEach(function(v) {
-    html += '<div class="vocab"><span class="vocab-en">' + v.en + '</span><span class="vocab-zh">' + v.zh + '</span></div>';
-  });
-  list.innerHTML = html;
-}
-
-// 启动
-init();
+});
 </script>
-
 </body>
 </html>
