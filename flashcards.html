@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SQE Flashcards - 记忆卡片</title>
-    <script>alert('Flashcards page loaded!');</script>
     <style>
         * {
             margin: 0;
@@ -330,10 +329,6 @@
                 <option value="legacy">遗嘱赠与分类</option>
                 <option value="failure">遗赠失败规则</option>
                 <option value="alterations">遗嘱修改</option>
-                <option value="business">商业法与公司治理</option>
-                <option value="equity">信托法</option>
-                <option value="land">土地法</option>
-                <option value="tort">侵权法</option>
             </select>
         </div>
         
@@ -436,107 +431,6 @@
                 category: "legacy",
                 question: "Pecuniary Legacy 是什么？",
                 answer: "金钱遗赠（pecuniary = 金钱的）。\n\n例子：'£5,000 to my nephew'\n\n特点：\n• 属于General Legacy\n• 必须支付（即使遗产不足可能削减）\n• 从剩余遗产优先支付"
-            },
-            // 商业法 Q&A
-            {
-                category: "business",
-                question: "英国公司有哪些主要类型？",
-                answer: "1. **Sole Trader**（独资企业）：简单，责任人无限\n2. **Partnership**（合伙）：2-20人，普通合伙人无限责任\n3. **LLP**（有限责任合伙）：合伙人有限责任\n4. **Limited Company**（有限责任公司）：股东有限责任\n5. **Public Limited Company (PLC)**：可以公开募股"
-            },
-            {
-                category: "business",
-                question: "什么是公司的 memorandum of association？",
-                answer: "公司备忘录（Memorandum of Association）是公司的核心文件，包含：\n\n• **公司名称**\n• **注册地址**（必须在英国）\n• **公司目的**（现在通常是广泛表述）\n• **责任限制**（limited/unlimited）\n• **股本**（股份数量和面值）\n\n是公司的"出生证明""
-            },
-            {
-                category: "business",
-                question: "什么是 articles of association？",
-                answer: "公司章程（Articles of Association）是公司的内部治理规则，规定：\n\n• 股东权利和投票程序\n• 董事会组成和权力\n• 股息分配规则\n• 董事任免程序\n• 会议召开程序\n\n可以修改，但需特殊决议（75%同意）"
-            },
-            {
-                category: "business",
-                question: "董事的基本职责有哪些？",
-                answer: "英国公司法下董事有三大核心义务：\n\n1. **注意义务**（Care and Skill）：\n   - 合理勤勉地履行职责\n   - 需具备一般知识、技能和经验\n\n2. **忠实义务**（Duty of Loyalty）：\n   - 避免利益冲突\n   - 不接受第三人利益\n\n3. **促进公司成功**（s.172 Companies Act 2006）：\n   - 考虑股东、员工、供应商、社区等利益"
-            },
-            {
-                category: "business",
-                question: "什么是董事的注意义务？",
-                answer: "注意义务（Care, Skill and Diligence）要求董事：\n\n• 达到一般人的合理注意标准\n• 对于专业董事（ accountant/solicitor），达到专业标准\n• 主动了解公司业务\n• 参加董事会会议\n• 寻求专业建议（必要时）\n\n违反可能导致个人责任"
-            },
-            {
-                category: "business",
-                question: "什么是董事的利益冲突？",
-                answer: "利益冲突（Conflict of Interest）包括：\n\n• 与公司的交易（direct or indirect）\n• 使用公司机会或信息\n• 担任竞争对手董事\n• 关联公司交易\n\n**处理方式**：\n• 披露利益\n• 获得董事会批准\n• 记载在会议记录中"
-            },
-            {
-                category: "business",
-                question: "股东大会的普通决议 vs 特别决议？",
-                answer: "**普通决议**（Ordinary Resolution）：\n• 简单多数（>50%）通过\n• 用于：任命董事、审计师、分配股息\n\n**特别决议**（Special Resolution）：\n• 75%及以上通过\n• 用于：修改章程、减少股本、公司解散\n\n注意：表决前需21天通知"
-            },
-            {
-                category: "business",
-                question: "什么是公司的派生诉讼（Derivative Action）？",
-                answer: "派生诉讼允许股东以公司名义提起诉讼：\n\n**适用情况**：\n• 董事行为不当（如疏忽、越权）\n• 多数股东压迫少数股东\n• 公司权利被侵犯\n\n**前提条件**：\n• 需先请求公司起诉（通常董事会拒绝）\n• 法院许可（leave of the court）\n\n**目的**：保护公司利益，防止董事/高管不当行为"
-            },
-            {
-                category: "business",
-                question: "什么是 piercing the corporate veil？",
-                answer: "揭开公司面纱（Piercing the Corporate Veil）是指在特定情况下，忽略公司的独立法律人格，让股东或董事对公司债务承担个人责任。\n\n**常见情形**：\n• 欺诈或违法行为\n• 公司形骸化（无独立意志）\n• 逃避法律义务\n• 逃避合同义务\n\n**注意**：法院很少这样做，需极其例外的情况"
-            },
-            {
-                category: "equity",
-                question: "什么是信托（Trust）？",
-                answer: "信托是一种法律关系，其中受托人（Trustee）为受益人（Beneficiary）持有和管理财产。\n\n**三要素**：\n1. **确定性**（Certainty）：\n   - 确定性意图（settlor intent）\n   - 确定性标的（certainty of subject matter）\n   - 确定性对象（certainty of objects）\n\n2. **转让**（Constitution）：财产必须转移给受托人\n\n3. **目的合法**（Valid Purpose）"
-            },
-            {
-                category: "equity",
-                question: "Express Trust vs Implied Trust 的区别？",
-                answer: "**明示信托（Express Trust）**：\n• 当事人明确设立（书面或口头）\n• 例子：信托契约、遗嘱中的信托\n\n**默示信托（Implied Trust）**：\n• 法律推断存在\n• 包括 Resulting Trust 和 Constructive Trust\n\n**Resulting Trust**：\n• 财产转让但未明确设立信托时适用\n• 用于保护转让人的利益\n\n**Constructive Trust**：\n• 法院因公平理由强加\n• 用于纠正不当行为"
-            },
-            {
-                category: "equity",
-                question: "什么是 resulting trust？",
-                answer: "结果信托（Resulting Trust）是默示信托的一种：\n\n**当财产转让但未明确设立信托时**，法律假设转让人保留了受益权。\n\n**两种情况**：\n1. **明确转让但未设立信托**：财产返还给转让人\n2. **信托财产有剩余**：剩余部分归原始设立人\n\n**例子**：A转账给B买股票，但未说明用途 → B为A持有（resulting trust）"
-            },
-            {
-                category: "equity",
-                question: "什么是 constructive trust？",
-                answer: "推定信托（Constructive Trust）是法院因公平理由强加的信托：\n\n**不要求当事人意图**，而是基于：\n\n1. **违反信任义务**：受托人违反职责\n2. **不當得利**：获得不应得的利益\n3. **欺诈行为**：通过欺诈获得财产\n\n**例子**：\n• 董事使用公司机会为自己谋利\n• 受托人挪用信托财产\n• 销售人员挪用客户资金"
-            },
-            {
-                category: "land",
-                question: "什么是 leasehold 租借地产权？",
-                answer: "租借地产权（Leasehold）是租赁他人土地的财产权：\n\n**特点**：\n• 有固定期限（term of years）\n• 租户拥有占有权（exclusive possession）\n• 需支付租金\n\n**类型**：\n1. **Term of Years Absolute**：固定期限\n2. **Periodic Tenancy**：周期性租约（按周/月/年）\n3. **Tenancy at Will**：任意租约\n4. **Tenancy at Sufferance**：默许租约\n\n**重要**：Leasehold 在英国法下是财产（chattel），不是地产（land）"
-            },
-            {
-                category: "land",
-                question: "什么是 freehold 永久产权？",
-                answer: "永久产权（Freehold）是土地的最高所有权：\n\n**两种形式**：\n1. **Fee Simple Absolute in Possession**：\n   - 永久无限制的所有权\n   - 可以继承\n   - 最强的土地权\n\n2. **Fee Tail**（已很少用）：\n   - 限定继承，只能由特定后代继承\n\n**对比**：\n- Freehold = 永久拥有\n- Leasehold = 租赁（通常99年等）"
-            },
-            {
-                category: "land",
-                question: "什么是 license to occupy？",
-                answer: "占用许可（License to occupy）是允许进入和占用土地的权利，但不是财产利益：\n\n**与租约的区别**：\n- License：无独占占有权（可被驱逐）\n- Lease：有独占占有权\n\n**例子**：\n- 酒店房间\n- 体育场座位\n- 朋友借住家中\n\n**关键**：无独占占有 = License，有独占占有 = Lease"
-            },
-            {
-                category: "land",
-                question: "什么是 easements 地役权？",
-                answer: "地役权（Easement）是一块土地对另一块土地的有限权利：\n\n**常见类型**：\n1. **Right of Way**：通行权\n2. **Right of Light**：采光权\n3. **Right of Support**：支撑权\n4. **Right to Water**：用水权\n\n**设立方式**：\n• 明示（Express）\n• 必要（Necessary）\n• 长期占有（Prescription）- 20年\n\n**特征**：\n- 必须有两个土地（dominant & servient）\n- 必须有利于 dominant land"
-            },
-            {
-                category: "tort",
-                question: "什么是 negligence 过失？",
-                answer: "过失（Negligence）是违反注意义务导致损害：\n\n**三要素**：\n1. **注意义务**（Duty of Care）：对原告负有注意义务\n2. **违反义务**（Breach）：未达到合理标准\n3. **因果关系**（Causation）：违反导致损害\n\n**合理标准**：\n- 正常理智人的行为\n- 专业标准（如医生、律师）\n\n**注意义务来源**：\n- 邻接原则（Neighbour principle）\n- 特殊关系（如医患、师生）"
-            },
-            {
-                category: "tort",
-                question: "什么是 duty of care 注意义务？",
-                answer: "注意义务是法律要求行为人对他人的合理关怀：\n\n**邻接原则（Caparo v Dickman）**：\n1. 可预见性（Foreseeability）\n2. 足够邻近（Proximity）\n3. 公平正义（Fair, Just and Reasonable）\n\n**职业注意义务**：\n- 医生：符合专业标准\n- 律师：符合执业标准\n- 建筑师：符合行业标准\n\n**注意**：过失侵权必须有实际损害才能索赔"
-            },
-            {
-                category: "tort",
-                question: "什么是 res ipsa loquitur？",
-                answer: "事实自证（Res Ipsa Loquitur）是过失推定原则：\n\n**含义**："事实自己说话" - 事件本身就能证明过失\n\n**适用条件**：\n1. 事故本身通常不会发生（若无过失）\n2. 被告完全控制事故物/情况\n3. 排除原告过错\n\n**例子**：\n• 手术遗留纱布在体内\n• 建筑物倒塌\n• 电梯坠落\n\n**效果**：推定被告有过失，需被告反证"
             }
         ];
 
@@ -562,92 +456,49 @@
 
         // 初始化
         function init() {
-            alert('init called, flashcards count: ' + flashcards.length);
+            loadProgress();
+            filterCards();
+            updateStats();
+            showCard();
             
-            // 直接设置卡片数量
-            if (totalCardsEl) {
-                totalCardsEl.textContent = flashcards.length;
-            }
-            if (currentCardEl) {
-                currentCardEl.textContent = '1';
-            }
-            if (masteredCountEl) {
-                masteredCountEl.textContent = '0';
-            }
-            if (remainingCountEl) {
-                remainingCountEl.textContent = flashcards.length.toString();
-            }
-            
-            // 显示第一张卡片
-            if (flashcards.length > 0) {
-                const card = flashcards[0];
-                if (questionContent) questionContent.textContent = card.question;
-                if (answerContent) answerContent.textContent = card.answer;
-            }
-            
-            // 设置进度条
-            if (progressFill) {
-                progressFill.style.width = '0%';
-            }
-            
-            console.log('Total flashcards:', flashcards.length);
+            // 本地存储进度
+            saveProgress();
         }
 
         // 加载进度
         function loadProgress() {
-            try {
-                const saved = localStorage.getItem('sqe-flashcards-progress');
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    progress.mastered = new Set(data.mastered || []);
-                    progress.currentIndex = data.currentIndex || 0;
-                }
-            } catch (e) {
-                console.warn('Load progress failed:', e);
+            const saved = localStorage.getItem('sqe-flashcards-progress');
+            if (saved) {
+                const data = JSON.parse(saved);
+                progress.mastered = new Set(data.mastered || []);
+                progress.currentIndex = data.currentIndex || 0;
             }
         }
 
         // 保存进度
         function saveProgress() {
-            try {
-                localStorage.setItem('sqe-flashcards-progress', JSON.stringify({
-                    mastered: Array.from(progress.mastered),
-                    currentIndex: progress.currentIndex
-                }));
-            } catch (e) {
-                console.warn('Save progress failed:', e);
-            }
-        }
-
-        // 获取筛选后的卡片总数（不排除已掌握的）
-        function getFilteredTotal() {
-            const category = categorySelect.value;
-            return flashcards.filter(card => {
-                if (category === 'all') return true;
-                return card.category === category;
-            }).length;
+            localStorage.setItem('sqe-flashcards-progress', JSON.stringify({
+                mastered: Array.from(progress.mastered),
+                currentIndex: progress.currentIndex
+            }));
         }
 
         // 筛选卡片
         function filterCards() {
-            console.log('filterCards called, flashcards:', typeof flashcards, flashcards ? flashcards.length : 'undefined');
-            console.log('categorySelect:', categorySelect);
-            
-            const category = categorySelect ? categorySelect.value : 'all';
-            const allFiltered = flashcards.filter(card => {
+            const category = categorySelect.value;
+            progress.reviewQueue = flashcards.filter(card => {
                 if (category === 'all') return true;
                 return card.category === category;
             });
             
-            console.log('Filtered count:', allFiltered.length);
-            
-            // 显示总数
-            if (totalCardsEl) totalCardsEl.textContent = allFiltered.length;
-            
             // 移除已掌握的卡片（随机模式除外）
-            progress.reviewQueue = allFiltered.filter((_, idx) => 
-                progress.shuffled || !progress.mastered.has(getOriginalIndex(idx))
-            );
+            if (!progress.shuffled) {
+                progress.reviewQueue = progress.reviewQueue.filter((_, idx) => 
+                    !progress.mastered.has(getOriginalIndex(idx))
+                );
+            }
+            
+            totalCardsEl.textContent = progress.reviewQueue.length;
         }
 
         // 获取原始索引
@@ -679,15 +530,13 @@
 
         // 更新统计
         function updateStats() {
-            const category = categorySelect.value;
-            const totalInCategory = getFilteredTotal();
+            const total = progress.reviewQueue.length;
             const mastered = progress.mastered.size;
-            const remaining = totalInCategory - mastered;
+            const remaining = total - progress.currentIndex - 1 + (total - progress.currentIndex - 1 >= 0 ? 0 : 0);
             
             masteredCountEl.textContent = mastered;
-            remainingCountEl.textContent = remaining;
             
-            const progressPercent = totalInCategory > 0 ? (mastered / totalInCategory) * 100 : 0;
+            const progressPercent = total > 0 ? ((progress.currentIndex + 1) / total) * 100 : 0;
             progressFill.style.width = progressPercent + '%';
         }
 
@@ -754,7 +603,6 @@
             progress.currentIndex = 0;
             progress.shuffled = false;
             filterCards();
-            updateStats();
             showCard();
         });
 
@@ -795,12 +643,7 @@
         });
 
         // 启动
-        try {
-            init();
-        } catch (e) {
-            console.error('Init error:', e);
-            document.getElementById('questionContent').innerHTML = '加载失败: ' + e.message;
-        }
+        init();
     </script>
 </body>
 </html>
