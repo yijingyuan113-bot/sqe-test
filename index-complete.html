@@ -8,18 +8,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--p:#5B4FCF;--pl:#7B6FEF;--bg:#EEF0FF;--c:#FFF;--t:#1E1E2F;--tl:#6B7280;--bd:#E5E7EB;--ok:#10B981;--er:#EF4444;--warn:#F59E0B;--r:12px}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
-.h{_display:none!important}
-#home{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#EEF0FF 0%,#E8E6FF 50%,#F0EEFF 100%);padding:20px;text-align:center}
-.logo{width:80px;height:80px;background:linear-gradient(135deg,var(--p),var(--pl));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--c);margin-bottom:24px;box-shadow:0 8px 30px rgba(91,79,207,.3)}
-h1{font-size:2.2rem;font-weight:700;color:var(--t);margin-bottom:8px}
-.sub{font-size:1rem;color:var(--tl);margin-bottom:32px}
-.gap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
-.btn{padding:12px 28px;border-radius:10px;font-size:.95rem;font-weight:500;cursor:pointer;border:none;transition:all .2s}
-.btn1{background:linear-gradient(135deg,var(--p),var(--pl));color:var(--c);box-shadow:0 4px 15px rgba(91,79,207,.3)}
-.btn1:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(91,79,207,.4)}
-.btn2{background:var(--c);color:var(--p);border:1.5px solid var(--p)}
-.btn2:hover{background:#F5F4FF}
-#app{max-width:860px;margin:20px auto;background:var(--c);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);overflow:hidden}
+#app{min-height:100vh;max-width:860px;margin:20px auto;background:var(--c);border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.06);overflow:hidden}
 .top{background:linear-gradient(135deg,var(--p),var(--pl));color:var(--c);padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
 .top h2{font-size:1.1rem;font-weight:600}
 .top a{color:rgba(255,255,255,.85);text-decoration:none;font-size:.9rem}
@@ -94,25 +83,16 @@ h1{font-size:2.2rem;font-weight:700;color:var(--t);margin-bottom:8px}
 </style>
 </head>
 <body>
-<div id="home">
-  <div class="logo">🎓</div>
-  <h1>SQE 学习系统</h1>
-  <p class="sub">英国律师资格考试 · 精选题库 · 法律英语</p>
-  <div class="gap">
-    <button class="btn btn1" onclick="showLogin()">登录 开始学习</button>
-    <button class="btn btn2" onclick="enterApp()">直接进入</button>
-  </div>
-</div>
-<div id="app" class="h">
+<div id="app">
   <div class="top">
     <h2>🎓 SQE 学习系统</h2>
-    <a href="#" onclick="logout();return false;">退出</a>
   </div>
   <div class="nav">
     <button class="nb active" onclick="goTab('course',this)">📘 课程</button>
+    <button class="nb" onclick="goTab('materials',this)">📚 教材</button>
     <button class="nb" onclick="goTab('practice',this)">📝 题库</button>
-    <button class="nb" onclick="goTab('vocab',this)">📚 词汇</button>
     <button class="nb" onclick="goTab('notes',this)">📓 笔记</button>
+    <button class="nb" onclick="goTab('vocab',this)">📚 词汇</button>
     <button class="nb" onclick="goTab('exam',this)">📋 考试</button>
     <button class="nb" onclick="goTab('flashcard',this)">🃏 卡片</button>
   </div>
@@ -136,6 +116,29 @@ h1{font-size:2.2rem;font-weight:700;color:var(--t);margin-bottom:8px}
         </div>
       </div>
     </div>
+    <div id="tab-materials" class="tp">
+      <h2 class="pt">📚 学习教材</h2>
+      <div class="cg">
+        <div class="cc"><h3>FLK1 教材</h3>
+          <div class="ci"><div class="ct">宪法与行政法 Constitutional Law</div><div class="cd"><a href="materials/Constitutional-and-Administrative-Law-and-EU-Law-Manual.pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">合同法 Contract Law</div><div class="cd"><a href="materials/Contract-Law-manual.pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">侵权法 Tort Law</div><div class="cd"><a href="materials/Tort-Complete-Book.pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">商法 Business Law</div><div class="cd"><a href="materials/PgDL Core Guide - Company Law.pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">刑法 Criminal Law</div><div class="cd"><a href="materials/Criminal-Law-Complete-Book.pdf" target="_blank">PDF下载</a></div></div>
+        </div>
+        <div class="cc"><h3>FLK2 教材</h3>
+          <div class="ci"><div class="ct">土地法 Land Law</div><div class="cd"><a href="materials/Land-Complete-Book[50].pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">信托法 Trusts</div><div class="cd"><a href="materials/Trusts-Complete-Book.pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">遗嘱法 Wills</div><div class="cd"><a href="materials/Wills-Complete-Book[13].pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">律师会计 Solicitors Accounts</div><div class="cd"><a href="materials/Solicitors Accounts-Complete-Book[55].pdf" target="_blank">PDF下载</a></div></div>
+          <div class="ci"><div class="ct">财产实践 Property Practice</div><div class="cd"><a href="materials/Property-Practice-Complete-Book.pdf" target="_blank">PDF下载</a></div></div>
+        </div>
+      </div>
+      <div class="dv"></div>
+      <h3 style="margin:16px 0 12px;">其他资源</h3>
+      <div class="ic"><h4>BARBRI 教材</h4><p>• Volume 1 (374MB) - SQE1 主要教材<br>• Volume 2 (327MB) - 补充材料<br>• 请在本地教材文件夹中获取</p></div>
+      <div class="ic"><h4>UOL 全套教材</h4><p>包含所有科目完整教材 PDF<br>位置: Desktop/SQE/1-UOL全套教材/教材/</p></div>
+    </div>
     <div id="tab-practice" class="tp">
       <h2 class="pt">📝 题库练习 <span id="qTotalInfo" style="font-size:.8rem;color:var(--tl);font-weight:400"></span></h2>
       <div class="fb">
@@ -154,10 +157,41 @@ h1{font-size:2.2rem;font-weight:700;color:var(--t);margin-bottom:8px}
       <div id="vList" class="vl"></div>
     </div>
     <div id="tab-notes" class="tp">
-      <h2 class="pt">📓 学习笔记</h2>
-      <div class="nc"><h4>合同法要点 Contract Law</h4><p>• 要约 Offer - 明确要约内容、意图受约束<br>• 承诺 Acceptance - 完全同意要约<br>• 对价 Consideration - 有价值的交换<br>• 意思表示 Intention - 建立法律关系意图<br>• 合同效力 Validity - 能力、对价、目的合法性</p></div>
-      <div class="nc"><h4>侵权法三要素 Tort Elements</h4><p>1. Duty of care 注意义务<br>2. Breach 违反义务<br>3. Causation 因果关系<br>4. Damage 损害结果</p></div>
-      <div class="nc"><h4>信托三要素 Trust Elements</h4><p>1. Certainty of intention 意图确定<br>2. Certainty of subject matter 标的确信<br>3. Certainty of objects 对象确定</p></div>
+      <h2 class="pt">📓 必背考点（详细版）</h2>
+
+      <h3 style="color:var(--p);margin:16px 0 12px;">📌 合同法 CONTRACT LAW</h3>
+      <div class="nc"><h4>1. 有效合同5大要素</h4><p>1. <strong>要约 Offer</strong> - 向特定人发出的明确交易意愿<br>2. <strong>承诺 Acceptance</strong> - 完全接受要约条件<br>3. <strong>对价 Consideration</strong> - 有价值的交换<br>4. <strong>缔约能力 Capacity</strong> - 双方有签订合同的法律能力<br>5. <strong>合法性 Legality</strong> - 合同目的合法</p></div>
+      <div class="nc"><h4>2. 要约 vs 邀请要约</h4><p>• <strong>要约 Offer</strong>：向特定人发出，收到后一旦承诺即成立合同<br>• <strong>邀请要约 Invitation to Treat</strong>：邀请对方报价，如广告、橱窗展示、招标</p></div>
+      <div class="nc"><h4>3. 对价3个规则</h4><p>1. 对价必须<strong>存在</strong>（必须是有价值的）<br>2. 对价必须<strong>来自承诺方</strong>（必须是当事人自己付出）<br>3. 过去对价<strong>不算</strong>（Past consideration is no consideration）</p></div>
+      <div class="nc"><h4>4. 合同无效情形</h4><p>1. <strong>错误 Misrepresentation</strong> - 重大事实错误<br>2. <strong>胁迫 Duress</strong> - 强迫签订<br>3. <strong>不当影响 Undue Influence</strong> - 滥用信任关系<br>4. <strong>非法 Illegal</strong> - 目的违法<br>5. <strong>虚假失信 Misconduct</strong> - 严重违约</p></div>
+      <div class="nc"><h4>5. 赔偿金条款</h4><p>• <strong>违约金条款 Liquidated Damages</strong>：预先约定违约金额，如合理估算实际损失，则有效<br>• <strong>罚金条款 Penalty</strong>：金额远超实际损失，则无效</p></div>
+
+      <h3 style="color:var(--p);margin:16px 0 12px;">📌 侵权法 TORT LAW</h3>
+      <div class="nc"><h4>1. 过失侵权3要素</h4><p>1. <strong>注意义务 Duty of Care</strong> - 对原告负有合理注意义务<br>2. <strong>违反义务 Breach</strong> - 未达到合理人标准<br>3. <strong>因果关系 Causation</strong> - 违反义务导致损害</p></div>
+      <div class="nc"><h4>2. 特殊侵权类型</h4><p>• <strong>疏忽 Negligence</strong>：注意义务+违反+损害+因果<br>• <strong>滋扰 Nuisance</strong>：干扰土地使用或享受<br>• <strong>非法侵入 Trespass</strong>：非法进入土地或干扰人身<br>• <strong>名誉侵权 Defamation</strong>：诽谤或诬蔑导致名誉受损</p></div>
+      <div class="nc"><h4>3. 雇主责任</h4><p>是的，只要员工在<strong>受雇范围内</strong>（in the course of employment）行事，雇主承担<strong>替代责任 Vicarious Liability</strong></p></div>
+
+      <h3 style="color:var(--p);margin:16px 0 12px;">📌 财产法 PROPERTY LAW</h3>
+      <div class="nc"><h4>1. 租赁权5大要素</h4><p>1. <strong>租户 Tenant</strong> - 明确<br>2. <strong>房东 Landlord</strong> - 明确<br>3. <strong>租期 Term</strong> - 书面（超过3年）<br>4. <strong>租金 Rent</strong> - 如有需明确<br>5. <strong>占有权 Possession</strong> - 转让使用权</p></div>
+      <div class="nc"><h4>2. 信托3要素</h4><p>1. <strong>确定意图 Intention</strong> - 设立信托的明确意图<br>2. <strong>确定财产 Certainty of subject matter</strong> - 信托财产明确<br>3. <strong>确定受益人 Certainty of objects</strong> - 受益人明确或可确定</p></div>
+
+      <h3 style="color:var(--p);margin:16px 0 12px;">📌 刑法 CRIMINAL LAW</h3>
+      <div class="nc"><h4>1. 犯罪构成要件</h4><p>1. <strong>行为 Actus Reus</strong> - 客观外在行为<br>2. <strong>意图 Mens Rea</strong> - 主观故意或过失<br>3. <strong>因果关系 Causation</strong> - 行为与结果有因果联系</p></div>
+      <div class="nc"><h4>2. 谋杀 vs 过失杀人</h4><p>• <strong>谋杀 Murder</strong>：故意造成死亡或严重伤害（GBH with intent）<br>• <strong>过失杀人 Manslaughter</strong>：非故意但造成死亡（可因疏忽或自愿导致）</p></div>
+      <div class="nc"><h4>3. 辩护理由</h4><p>1. <strong>正当防卫 Self-defence</strong> - 合理自卫<br>2. <strong>精神失常 Insanity</strong> - 精神疾病导致无法理解行为<br>3. <strong>自愿醉酒 Voluntary intoxication</strong> - 一般不成立辩护<br>4. <strong>胁迫 Duress</strong> - 被迫犯罪<br>5. <strong>减轻情节 Mitigation</strong> - 情有可原</p></div>
+
+      <h3 style="color:var(--p);margin:16px 0 12px;">📌 商业法 BUSINESS LAW</h3>
+      <div class="nc"><h4>1. 公司设立要件</h4><p>1. 公司名称 - 唯一且不违法<br>2. 注册地址 - 英国注册地址<br>3. 公司章程 - 规定公司治理结构<br>4. 董事 - 至少一名董事<br>5. 股东 - 至少一名股东</p></div>
+      <div class="nc"><h4>2. 董事职责</h4><p>1. <strong>诚信义务</strong> - 为公司最佳利益行事<br>2. <strong>注意义务</strong> - 具备合理技能和谨慎<br>3. <strong>忠实义务</strong> - 避免利益冲突<br>4. <strong>不越权</strong> - 在公司章程范围内行事</p></div>
+      <div class="nc"><h4>3. 破产程序</h4><p>1. <strong>自愿安排 IVA</strong> - 债务人与债权人协商<br>2. <strong>清算 Liquidation</strong> - 公司资产变卖<br>3. <strong>破产 Bankruptcy</strong> - 个人债务清偿程序<br>4. <strong>管理 Administration</strong> - 公司重组程序</p></div>
+
+      <h3 style="color:var(--p);margin:16px 0 12px;">📌 职业伦理 PROFESSIONAL CONDUCT</h3>
+      <div class="nc"><h4>1. 律师6大核心义务</h4><p>1. <strong>诚信 Honesty</strong> - 必须诚实守信<br>2. <strong>独立 Independence</strong> - 保持独立，不受不当影响<br>3. <strong>保密 Confidentiality</strong> - 严格保密客户信息<br>4. <strong>利益冲突 Conflict of Interest</strong> - 避免利益冲突<br>5. <strong>能力 Competence</strong> - 提供合格专业服务<br>6. <strong>客户利益 Client's Best Interests</strong> - 以客户最佳利益行事</p></div>
+      <div class="nc"><h4>2. 洗钱防范义务</h4><p>1. <strong>客户尽职调查 CDD</strong> - 核实客户身份<br>2. <strong>可疑交易报告 STR</strong> - 报告可疑活动<br>3. <strong>记录保存</strong> - 保存交易记录至少5年<br>4. <strong>员工培训</strong> - 培训员工识别洗钱迹象</p></div>
+
+      <div class="dv"></div>
+      <h3 style="margin:16px 0 12px;">📥 下载完整考点文档</h3>
+      <div class="ic"><h4>SQE 必背考点完整版</h4><p>桌面文件: <strong>SQE_必背考点_完整版.docx</strong><br>包含所有科目中英文对照考点，可打印背诵</p></div>
     </div>
     <div id="tab-exam" class="tp">
       <h2 class="pt">📋 SQE 考试介绍</h2>
@@ -211,18 +245,10 @@ function goTab(tab,btn){
   if(tab==='vocab'&&sqeVocab.length)renderVocab();
   if(tab==='flashcard'&&sqeQuestions.length)initFC();
 }
-function showLogin(){alert('登录功能开发中');}
-// Auto-enter app on load
-window.onload = function(){ enterApp(); };
-function enterApp(){
-  document.getElementById('home').classList.add('h');
-  document.getElementById('app').classList.remove('h');
-  if(!sqeQuestions.length)loadData();
-}
-function logout(){
-  document.getElementById('app').classList.add('h');
-  document.getElementById('home').classList.remove('h');
-}
+function showLogin(){}
+function enterApp(){}
+function logout(){}
+window.onload = function(){ loadData(); };
 function loadData(){
   var qs=document.createElement('script');
   qs.src='sqe_questions.js';
