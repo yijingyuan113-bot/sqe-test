@@ -212,6 +212,8 @@ function goTab(tab,btn){
   if(tab==='flashcard'&&sqeQuestions.length)initFC();
 }
 function showLogin(){alert('登录功能开发中');}
+// Auto-enter app on load
+window.onload = function(){ enterApp(); };
 function enterApp(){
   document.getElementById('home').classList.add('h');
   document.getElementById('app').classList.remove('h');
